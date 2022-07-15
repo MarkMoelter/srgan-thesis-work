@@ -1,13 +1,19 @@
-def create_pth(x: str):
+def create_pth(x: str) -> str:
     """Create a folder if it does not already exist at that path"""
     import os
     if not os.path.exists(x):
         os.makedirs(x)
     return x
 
-def log_init(name=None, level='logging.DEBUG', filepath='logs'):
+
+def log_init(
+        name: str = None,
+        filepath: str = 'logs',
+        level='logging.DEBUG'
+):
     """
     Initializes logger and names file using today's date.
+
     :param name: Name of logger
     :param level: Logging level
     :param filepath: Filepath to logs
@@ -43,16 +49,27 @@ def log_init(name=None, level='logging.DEBUG', filepath='logs'):
 
     return logger
 
-def combo_gen(lr_list, sr_list, except_list):
-    a = []
-    for LR in lr_list:
-        for SR in sr_list:
-            if f'{LR}-{SR}' in except_list:
-                continue
-            else:
-                a.append(f'{LR}-{SR}')
 
-    return a
+def image_size_combos(
+        lr_list: list[str],
+        sr_list: list[str],
+        except_list: list[str]
+) -> list[str]:
+    """
+    Generator function that creates a list of image size combinations.
+    :param lr_list: List of low resolution image sizes.
+    :param sr_list: List of desired super resolution image sizes.
+    :param except_list: List of exceptions to skip when generating the list.
+    :return: List of image size combinations.
+    """
+
+    return [
+        f'{LR}-{SR}'  # expression
+        for LR in lr_list  # low res images
+        for SR in sr_list  # sure res images
+        if f'{LR}-{SR}' not in except_list  # exceptions
+    ]
+
 
 def tone(duration=3, note='a'):
     """
@@ -66,3 +83,28 @@ def tone(duration=3, note='a'):
     duration_ms = duration * 1000  # convert seconds to milliseconds
 
     winsound.Beep(musical_dict[f'{note}'], duration_ms)  # play tone
+
+
+def img_save(
+        images,
+        save_path,
+        desc='[saving results]',
+        grid=False,
+        nrow=3,
+        position=0,
+        leave=True
+):
+    """Saves a list of images using\n
+    torch.utils.save_image()\n,
+    creates save_path dir.
+    """
+    from tqdm import tqdm
+    import torchvision.utils as utils
+    create_pth(save_path)
+    for index, image in enumerate(tqdm(images, desc=desc, position=position, leave=leave)):
+        zfill_idx = str(index).zfill(4)
+
+        if grid:
+            image = utils.make_grid(image, nrow=nrow)  # number of images in each row
+        img_out = f'{save_path}/{zfill_idx}.png'
+        utils.save_image(image, img_out)
