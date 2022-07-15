@@ -28,6 +28,7 @@ from multi_size_runner import MultiSizeRunner
 
 class DatasetInfo:
     """Dataset properties in one place"""
+
     def __init__(self, low_res_list, high_res_list, scale_factors):
         self.LR = low_res_list
         self.HR = high_res_list
@@ -41,7 +42,7 @@ class DatasetInfo:
         combos = []
         for lr in self.LR:
             for hr in self.HR:
-                if (hr//lr) not in self.scale_factors:
+                if (hr // lr) not in self.scale_factors:
                     continue
                 combos.append((lr, hr))
 
@@ -50,6 +51,7 @@ class DatasetInfo:
 
     def print(self):
         print(self.combinations())
+
 
 class Main:
     def __init__(
@@ -63,7 +65,6 @@ class Main:
 
         self.dataset_path = dataset_path
         self.dataset_csv_path = dataset_csv_path
-
 
     def dataset_generation(self, sets):
         """
@@ -124,13 +125,14 @@ def recognition_main():
             plate_df.to_csv(csv_pth, index=False)
             logger.info(f'{SR} SR Predictions saved')
 
+
 # accuracy
 # todo refactor accuracy
 def accuracy_main():
     lr = [16, 32, 64]
     sr = [64, 128, 256, 512]
     exceptions = ['16-256', '16-512', '32-512', '64-64']
-    lr_sr_size_list = helpers.combo_gen(lr, sr, exceptions)
+    lr_sr_size_list = helpers.image_size_combos(lr, sr, exceptions)
 
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
     predicted_plates = pd.read_csv(plt_csv)  # read csv
@@ -255,9 +257,6 @@ def main():
     val_data_path = 'Results/dataset/testing_set'
     val_df = multi.validation(val_data_path, 'Results/Images')
     logger.info(val_df.head())
-
-
-
 
 
 if '__main__' == __name__:

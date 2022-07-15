@@ -5,13 +5,14 @@ import statistics as stats
 import torch
 from tqdm import tqdm
 
-import funcs
+import helpers
 from loss import GeneratorLoss
 from metrics import TrainMetrics
 
 logger = logging.getLogger(__name__)
 
-class TrainRunner:
+
+class ModelTraining:
     """Implement each step in the model training phase"""
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -36,7 +37,7 @@ class TrainRunner:
             data_collect.disc_loss.append(d_loss)
 
         # save params
-        funcs.create_pth(self.param_dir)
+        helpers.create_pth(self.param_dir)
         torch.save(self.gen_net.state_dict(), f'{self.param_dir}/gen_params.pth')
         torch.save(self.disc_net.state_dict(), f'{self.param_dir}/disc_params.pth')
 

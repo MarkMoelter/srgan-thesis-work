@@ -4,13 +4,12 @@ import statistics as stats
 import torch
 from tqdm import tqdm
 
-import funcs
 import loss
 import model
 import metrics
+import helpers
 
 logger = logging.getLogger(__name__)
-
 
 
 class Images:
@@ -20,6 +19,7 @@ class Images:
         self.super_res = []
 
 
+# todo replace with model training and validation
 class RunModel:
     """Handles training and validation of the model."""
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -95,7 +95,7 @@ class RunModel:
             logger.info(f'[{epoch}/{num_epochs}] Disc Loss: {outer_metrics.disc_loss}')
 
         # save params
-        funcs.create_pth(self.param_path)
+        helpers.create_pth(self.param_path)
         torch.save(self.gen.state_dict(), f'{self.param_path}/gen_params.pth')
         torch.save(disc_net.state_dict(), f'{self.param_path}/disc_params.pth')
 
@@ -117,7 +117,6 @@ class RunModel:
         val_bar = tqdm(dataset)
         with torch.no_grad():
             for idx, (low_res, interpolated, target) in enumerate(val_bar):
-
                 # send tensors to cuda
                 target = target.to(self.device)
                 super_res = self.gen(low_res.to(self.device))
@@ -177,7 +176,7 @@ class RunModel:
                 img_cls.grid,
                 len(val_bar)
             )
-            funcs.img_save(
+            helpers.img_save(
                 img_cls.grid,
                 f'{image_save_path}/grid',
                 desc='[saving grid images]',
@@ -191,7 +190,7 @@ class RunModel:
                 img_cls.super_res,
                 len(val_bar)
             )
-            funcs.img_save(
+            helpers.img_save(
                 img_cls.super_res,
                 f'{image_save_path}/SR',
                 desc='[saving SR images]')
@@ -202,7 +201,7 @@ class RunModel:
                 img_cls.low_res,
                 len(val_bar)
             )
-            funcs.img_save(
+            helpers.img_save(
                 img_cls.low_res,
                 f'{image_save_path}/LR',
                 desc='[saving LR images]')

@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class ValidRunner:
+
+class ModelValidation:
     def __init__(self):
         pass
-

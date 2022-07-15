@@ -3,8 +3,8 @@ import math
 import torch
 import torch.nn as nn
 
-from residual_block import ResidualBlock
-from upsample_block import UpsampleBlock
+from .residual_block import ResidualBlock
+from .upsample_block import UpsampleBlock
 
 
 class Generator(nn.Module):

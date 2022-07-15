@@ -1,7 +1,7 @@
 import torch
 from torchvision.models.vgg import vgg16
 
-from total_variance_loss import TVLoss
+from .total_variance_loss import TVLoss
 
 
 class GeneratorLoss(torch.nn.Module):

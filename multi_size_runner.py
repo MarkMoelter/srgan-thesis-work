@@ -8,8 +8,10 @@ import GAN
 
 logger = logging.getLogger(__name__)
 
+
 class MultiSizeRunner:
     """Checks multiple size combinations"""
+
     def __init__(self, combinations, param_path: str, blur_radius=0):
         self.combos = combinations
         self.params = param_path
@@ -20,11 +22,13 @@ class MultiSizeRunner:
         """
         Create
         """
+
         def wrapper(*args, **kwargs):
             for idx, (lr_size, hr_size) in enumerate(self.combos):
                 self.params = f'{self.params}/{lr_size}-{hr_size}'
                 fn(*args, **kwargs)
             return fn
+
         return wrapper
 
     # @loop
@@ -47,20 +51,19 @@ class MultiSizeRunner:
 
             # log sizes processed
             logger.info(
-                f'[{idx+1}/{len(self.combos)}] '
+                f'[{idx + 1}/{len(self.combos)}] '
                 f'Training: {lr_size}to{hr_size} '
             )
 
             # create generator and model objects
             # fixme have generator be created elsewhere?
-            gen_net = GAN.Generator(hr_size//lr_size)
+            gen_net = GAN.Generator(hr_size // lr_size)
             model = GAN.RunModel(
                 gen_net,
                 f'{self.params}/{lr_size}to{hr_size}'
             )
 
             # training
-            # fixme use factory to generate data elsewhere
             # fixme TrainDataset is the only essential that needs combos
             #   generate somewhere else to reduce coupling
             processed_data = GAN.TrainDataset(
@@ -119,10 +122,9 @@ class MultiSizeRunner:
                         f'gen_params.pth'
 
             # create generator; load params; set to eval
-            gen_net = GAN.Generator(hr_size//lr_size)
+            gen_net = GAN.Generator(hr_size // lr_size)
             model = GAN.RunModel(gen_net, gen_param)
 
-            # fixme setup a key collection that sorts the dict into result class/dict
             SR_metrics, inter_metrics = model.run_validation(
                 dataset=val_loaded,
                 image_save_path=f'{img_save_dir}/{lr_size}to{hr_size}',
@@ -143,4 +145,3 @@ class MultiSizeRunner:
             return df
 
         df.to_csv(result_csv)
-
