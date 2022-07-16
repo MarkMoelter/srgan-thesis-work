@@ -1,19 +1,21 @@
 import os
-import pandas as pd
 
-from generator import Generator
-from template import Template
+import pandas as pd
+from tqdm import tqdm
+
+from plate_generator import PlateGenerator
+from rectangular_plate import RectangularPlate
 
 
 def main():
     SETS = 6
-    IMG_DIR = ''
-    CSV_PATH = ''
+    IMG_DIR = 'data_gen/dataset'
+    CSV_PATH = 'data_gen/image_labels.csv'
 
     # plate_dir = 'Results/dataset/testing_set'
     # master_csv = f'Results/CSVs/Master_Dataset.csv'
 
-    gen = Generator(Template)
+    gen = PlateGenerator(RectangularPlate)
     plates = gen.multi_plates(SETS)
 
     plate_list = [
@@ -23,12 +25,11 @@ def main():
 
     # dataframe creation and save
     dataframe = pd.DataFrame(plate_list, columns=['Filename', 'Labels'])
-    print(dataframe.head())
-    # dataframe.to_csv(CSV_PATH, index=False)
+    dataframe.to_csv(CSV_PATH, index=False)
 
     # save the images
-    # for plate in plates:
-    #     plate.save_plate(IMG_DIR)
+    for plate in tqdm(plates):
+        plate.save_plate(IMG_DIR)
 
 
 if __name__ == '__main__':
