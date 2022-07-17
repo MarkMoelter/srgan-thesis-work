@@ -9,10 +9,10 @@ from rectangular_plate import RectangularPlate
 
 def main():
     SETS = 6
-    IMG_DIR = 'data_gen/dataset'
+    IMG_DIR = 'data_gen/master_dataset'
     CSV_PATH = 'data_gen/image_labels.csv'
 
-    # plate_dir = 'Results/dataset/testing_set'
+    # plate_dir = 'Results/master_dataset/testing_set'
     # master_csv = f'Results/CSVs/Master_Dataset.csv'
 
     gen = PlateGenerator(RectangularPlate)
