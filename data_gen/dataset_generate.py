@@ -4,10 +4,10 @@ import pandas as pd
 from tqdm import tqdm
 
 from plate_generator import PlateGenerator
-from rectangular_plate import RectangularPlate
+from data_gen.plate_templates.rectangular_plate import RectangularPlate
 
 
-def main():
+def dataset_generate():
     SETS = 6
     IMG_DIR = 'data_gen/master_dataset'
     CSV_PATH = 'data_gen/image_labels.csv'
@@ -35,4 +35,4 @@ def main():
 if __name__ == '__main__':
     os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
 
-    main()
+    dataset_generate()

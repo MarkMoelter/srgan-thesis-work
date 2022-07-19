@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from color import Color
 from plate import Plate
-from template import Template
+from data_gen.plate_templates.template import Template
 
 
 class PlateGenerator:

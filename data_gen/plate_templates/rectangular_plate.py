@@ -7,7 +7,7 @@ from template import Template
 
 @dataclass
 class RectangularPlate(Template):
-    base_image_path = 'resources/plate_template.jpg'
+    base_image_path = '../resources/plate_template.jpg'
 
     x_pos = [35, 87, 138, 190, 242, 294, 346]
     y_pos = 53
@@ -19,5 +19,4 @@ class RectangularPlate(Template):
     ])
 
     font_size = 120
-    font_path = 'resources/plate_font.ttf'
-
+    font_path = '../resources/plate_font.ttf'
