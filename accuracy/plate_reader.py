@@ -8,6 +8,8 @@ import torchvision.transforms as transforms
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
+
+
 # todo annotate plate reader
 def plate_reader(
         image_dir: str,
@@ -17,7 +19,6 @@ def plate_reader(
 ):
     # set pytesseract as environment var
     tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
-
 
     _dir = os.listdir(image_dir)
     plate_dict = {
@@ -48,7 +49,7 @@ def plate_reader(
         h, w = img.shape
         crop_h, crop_w = int(h * 280 / 512), int(w * 450 / 512)
         resize_h = 256
-        resize_w = resize_h*4
+        resize_w = resize_h * 4
         transform = transforms.Compose([
             transforms.ToPILImage(),
             transforms.CenterCrop((crop_h, crop_w)),
@@ -75,7 +76,7 @@ def plate_reader(
         plate_dict['Predicted Plate'].append(filter_predicted_result)
         # logger.debug(plate_dict['Predicted Plate'][-1])
 
-        # combine individual labels into plates, only for master dataset
+        # combine individual labels into plates, only for master master_dataset
         if csv_in_path is not None:
             # read the csv with plate file names and labels
             csv = pd.read_csv(csv_in_path)
