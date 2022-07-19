@@ -1,9 +1,14 @@
-def create_pth(x: str) -> str:
-    """Create a folder if it does not already exist at that path"""
+def create_pth(path: str) -> str:
+    """
+    Create a folder if it does not already exist at that path. Returns the path.
+    
+    :param path: Path to create.
+    :return: The same path.
+    """
     import os
-    if not os.path.exists(x):
-        os.makedirs(x)
-    return x
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 
 
 def log_init(
@@ -51,8 +56,8 @@ def log_init(
 
 
 def image_size_combos(
-        lr_list: list[str],
-        sr_list: list[str],
+        lr_list: list[int],
+        sr_list: list[int],
         except_list: list[str]
 ) -> list[str]:
     """
