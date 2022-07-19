@@ -1,3 +1,20 @@
 LR_LIST = [16, 32, 64]
 HR_LIST = [64, 128, 256, 512]
 SCALE_TUPLE = (2, 4, 8)
+
+PARAM_PATH = 'Results/params'
+GEN_PARAM_FILENAME = 'gen_params.pth'
+DISC_PARAM_FILENAME = 'disc_params.pth'
+
+# Training
+EPOCH_NUM = 5
+TRAIN_DATA_PATH = 'Results/dataset/training_set/BlurRad_0'
+TRAIN_CSV_PATH = 'Results/CSVs/training'
+
+# Validation
+VAL_DATA_PATH = 'Results/dataset/testing_set'
+IMG_DIR = 'Results/Images'
+VAL_CSV_PATH = 'Results/CSVs/testing/metrics.csv'
+
+# Accuracy
+ACC_CSV_PATH = 'Results/CSVs/recog&acc/Final_Accuracy.csv'
