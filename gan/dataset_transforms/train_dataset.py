@@ -10,6 +10,14 @@ from torchvision.transforms import Compose, RandomCrop, ToTensor, Resize
 logger = logging.getLogger(__name__)
 
 
+def is_image_file(filename):
+    """Checks if the file is one of file types listed below"""
+    file_ext = ['.png', '.jpg', '.jpeg', '.PNG', '.JPG', '.JPEG']
+    return (
+        any(filename.endswith(extension) for extension in file_ext)
+    )
+
+
 class TrainDataset(Dataset):
     """
     Returns random crop of hr image (crop_size, crop_size).

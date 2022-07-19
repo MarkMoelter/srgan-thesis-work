@@ -1,7 +1,7 @@
 import torch
 from torchvision.models.vgg import vgg16
 
-from .total_variance_loss import TVLoss
+from .total_variance_loss import TotalVarianceLoss
 
 
 class GeneratorLoss(torch.nn.Module):
@@ -13,7 +13,7 @@ class GeneratorLoss(torch.nn.Module):
             param.requires_grad = False
         self.loss_network = loss_network
         self.mse_loss = torch.nn.MSELoss()
-        self.tv_loss = TVLoss()
+        self.tv_loss = TotalVarianceLoss()
 
     def forward(self, out_labels, out_images, target_images):
         # Image Loss

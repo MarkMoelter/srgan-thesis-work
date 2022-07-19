@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class TVLoss(nn.Module):  # total variation loss
+class TotalVarianceLoss(nn.Module):  # total variation loss
     def __init__(self, tv_loss_weight=1):
-        super(TVLoss, self).__init__()
+        super(TotalVarianceLoss, self).__init__()
         self.tv_loss_weight = tv_loss_weight
 
     def forward(self, x):
