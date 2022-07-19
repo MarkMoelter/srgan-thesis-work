@@ -6,14 +6,13 @@ import torchvision.utils as utils
 from tqdm import tqdm
 
 import helpers
-from metrics import CalculateMetrics
-from model import Generator
+from gan.metrics import CalculateMetrics
+from gan.model import Generator
 
 logger = logging.getLogger(__name__)
 
 
-# TODO: replace run_model with model_training and model_validation
-class ModelValidation:
+class Validation:
     """
     Validation/Testing of the model.
     Using images the model has never been trained with.
@@ -27,27 +26,31 @@ class ModelValidation:
             dataset,
             img_save_dir: str
     ):
-        self.generator = generator
+        self.generator = generator.to(self.device)
         self.param_path = generator_param_path
         self.dataset = dataset
         self.img_save_dir = img_save_dir
 
-    def main_loop(self) -> dict:
+        # metrics
+        self.sr_psnr = []
+        self.sr_ssim = []
+        self.inter_psnr = []
+        self.inter_ssim = []
+
+        # images
+        self.grid_images = []
+        self.low_res_images = []
+        self.super_res_images = []
+
+    def main_loop(self) -> None:
         """
         Main loop for running the validation of the model.
-
-        :return: Dictionary containing the average
-                metrics for the model validation.
+        appends the
         """
         images = {
             'grid': [],
             'super_res': [],
             'low_res': [],
-        }
-
-        metrics = {
-            'super_res': {'psnr': [], 'ssim': []},
-            'inter': {'psnr': [], 'ssim': []}
         }
 
         # load and set generator to eval
@@ -65,11 +68,11 @@ class ModelValidation:
                 super_res_metrics = CalculateMetrics(reference, super_res)
                 interpolated_metrics = CalculateMetrics(reference, interpolated)
 
-                metrics['super_res']['psnr'].append(super_res_metrics.psnr())
-                metrics['super_res']['ssim'].append(super_res_metrics.ssim())
+                self.sr_psnr.append(super_res_metrics.psnr())
+                self.sr_ssim.append(super_res_metrics.ssim())
 
-                metrics['inter']['psnr'].append(interpolated_metrics.psnr())
-                metrics['inter']['ssim'].append(interpolated_metrics.ssim())
+                self.inter_psnr.append(interpolated_metrics.psnr())
+                self.inter_ssim.append(interpolated_metrics.ssim())
 
                 val_bar.set_description(
                     desc=(
@@ -98,12 +101,26 @@ class ModelValidation:
             self._save_images(images['super_res'], len(val_bar), 'SR')
             self._save_images(images['low_res'], len(val_bar), 'LR')
 
-            # return the average values for the metrics
-            return {
-                key: {subkey: statistics.mean(data)}
-                for key, subdict in metrics.items()
-                for subkey, data in subdict.items()
-            }
+    def collect_metrics(self):
+        """Return the mean value of each metric collected in the main loop.
+
+        Order:
+
+        - sr_psnr
+        - sr_ssim
+        - inter_psnr
+        - inter_ssim
+        """
+
+        metric_list = [
+            self.sr_psnr,
+            self.sr_ssim,
+            self.inter_psnr,
+            self.inter_ssim
+        ]
+
+        metric_list = [statistics.mean(metric) for metric in metric_list]
+        return metric_list
 
     def _load_generator(self) -> None:
         """
