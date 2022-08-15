@@ -55,7 +55,7 @@ def multi_input_gan():
     helpers.tone()
 
 
-if '__main__' == __name__:
+if __name__ == '__main__':
     os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
 
     logger = helpers.log_init()

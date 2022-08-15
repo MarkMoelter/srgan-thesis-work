@@ -11,7 +11,7 @@ from gan.metrics import TrainMetrics
 logger = logging.getLogger(__name__)
 
 
-# FIXME: Refactor this abomination to work as separate methods.
+# FIXME Refactor this abomination to work as separate methods.
 class Training:
     """Implement each step in the model training phase"""
 
