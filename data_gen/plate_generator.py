@@ -3,16 +3,16 @@ import random
 from PIL import Image, ImageFont, ImageDraw
 from tqdm import tqdm
 
-from color import Color
-from plate import Plate
-from data_gen.plate_templates.template import Template
+from .color import Color
+from .plate import Plate
+from .plate_templates import Template
 
 
 class PlateGenerator:
     def __init__(self, plate_template: Template):
         self.template = plate_template
 
-    def multi_plates(self, sets: int) -> list[Plate]:
+    def multi_plates(self, sets: int = 1) -> list[Plate]:
         """
         Generate a list of plate objects.
 
@@ -21,24 +21,27 @@ class PlateGenerator:
         :param sets: The number of sets to generate.
         :return: A list of plate objects.
         """
-        plate_list = []
-        for _ in tqdm(range(sets)):
-            for char in self.template.available_chars:
-                for x in self.template.x_pos:
-                    plate_list.append(self.single_plate(char, x))
 
-        return plate_list
+        return [
+            self.single_plate(char, x)
+            for x in self.template.x_pos
+            for char in self.template.available_chars
+            for _ in tqdm(range(sets))
+        ]
 
-    def single_plate(self, char: str, x_pos: int) -> Plate:
+    def single_plate(self, character: str, x_position: int) -> Plate:
         """
         Generate a single Plate object given a character and a pixel position.
 
-        :param char: Character to map to the x_pos param.
-        :param x_pos: Position in pixel coordinates.
+        :param character: Character to map to the x_pos param.
+        :param x_position: Position in pixel coordinates.
         :return: Plate object with the given character in the given position.
         """
+        self.char_error(character)
+        self.pos_error(x_position)
+
         with Image.open(self.template.base_image_path).convert('RGBA') as base:
-            label = self.generate_label(char, x_pos)
+            label = self.generate_label(character, x_position)
 
             # create a transparent layer
             text_layer = Image.new(
@@ -63,7 +66,7 @@ class PlateGenerator:
 
             return Plate(label, RGB_img, label)
 
-    def generate_label(self, character, x_pos) -> str:
+    def generate_label(self, character: str, x_position: int) -> str:
         """
         Generate a license plate label with the given character
         in the given position. All other characters will be randomly chosen
@@ -73,15 +76,27 @@ class PlateGenerator:
         in the plate template.
 
         :param character: Character that will go in the given position
-        :param x_pos: Position in pixel coordinates.
+        :param x_position: Position in pixel coordinates.
         :return: String label with the given character in the given position.
         """
 
+        # raise Exceptions
+        self.pos_error(x_position)
+        self.char_error(character)
+
         label = []
         for x in self.template.x_pos:
-            if x == x_pos:
+            if x == x_position:
                 label.append(character)
-            else:
+            elif x_position in self.template.x_pos:
                 label.append(random.choice(self.template.available_chars))
 
         return ''.join(label)
+
+    def char_error(self, character: str):
+        if character not in self.template.available_chars:
+            raise ValueError('Invalid character')
+
+    def pos_error(self, position: int):
+        if position not in self.template.x_pos:
+            raise ValueError('Invalid position')

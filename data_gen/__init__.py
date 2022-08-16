@@ -1,2 +1,2 @@
 from .plate_generator import PlateGenerator
-from .plate_templates import Template
+from .plate_templates import Template, RectangularPlate
