@@ -14,7 +14,7 @@ from plate import Plate
 logger = logging.getLogger(__name__)
 
 
-# TODO: Get rid of plate_reader from accuracy and
+# TODO: Get rid of plate_reader from main.py
 class PlateReader:
     def __init__(
             self,
@@ -28,6 +28,50 @@ class PlateReader:
         self.prediction_csv_path = prediction_csv_path
         self.image_show = image_show
         self.plate_obj_list = []
+
+    def reader_loop(self):
+        """
+        Read the characters from the plates and store them in a Dataframe.
+        """
+        # set pytesseract as environment var
+        tess.pytesseract.tesseract_cmd = c.PYTESSERACT_ENV_VAR_PATH
+
+        bar = tqdm(os.listdir(self.image_dir), desc='Predicting plates')
+
+        # loop through all files in a dir
+        for filename in bar:
+
+            # skip iteration if file does not exist
+            if not os.path.isfile(os.path.join(self.image_dir, filename)):
+                continue
+
+            bar.set_description(f'Predicting plate: {filename}')
+
+            plate_path = f'{self.image_dir}/{filename}'
+            transformed_plate = self._transform(plate_path)
+
+            if self.image_show:
+                transformed_plate.show()
+
+            # generate the prediction
+            prediction = tess.image_to_string(
+                transformed_plate,
+                lang='eng',
+                config='--psm 6 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            )
+
+            # filter
+            blacklist_chars = ['-', ' ']
+            filter_prediction = self._filter_string(prediction, blacklist_chars)
+
+            # add to the plate list
+            self.plate_obj_list.append(Plate(filename, filename, filter_prediction))
+
+        # save a csv
+        if self.prediction_csv_path is not None:
+            self._save_csv()
+
+        return [plate.prediction for plate in self.plate_obj_list]
 
     @staticmethod
     def _filter_string(prediction: str, blacklist: list[str]):
@@ -81,51 +125,6 @@ class PlateReader:
                 interpolation=transforms.InterpolationMode.BICUBIC
             )
         ])(img)
-
-    # TODO: Implement the main loop
-    def reader_loop(self):
-        """
-        Read the characters from the plates and store them in a Dataframe.
-        """
-        # set pytesseract as environment var
-        tess.pytesseract.tesseract_cmd = c.PYTESSERACT_ENV_VAR_PATH
-
-        bar = tqdm(os.listdir(self.image_dir), desc='Predicting plates')
-
-        # loop through all files in a dir
-        for filename in bar:
-
-            # skip iteration if file does not exist
-            if not os.path.isfile(os.path.join(self.image_dir, filename)):
-                continue
-
-            bar.set_description(f'Predicting plate: {filename}')
-
-            plate_path = f'{self.image_dir}/{filename}'
-            transformed_plate = self._transform(plate_path)
-
-            if self.image_show:
-                transformed_plate.show()
-
-            # generate the prediction
-            prediction = tess.image_to_string(
-                transformed_plate,
-                lang='eng',
-                config='--psm 6 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-            )
-
-            # filter
-            blacklist_chars = ['-', ' ']
-            filter_prediction = self._filter_string(prediction, blacklist_chars)
-
-            # add to the plate list
-            self.plate_obj_list.append(Plate(filename, filename, filter_prediction))
-
-        # save a csv
-        if self.prediction_csv_path is not None:
-            self._save_csv()
-
-        return [plate.prediction for plate in self.plate_obj_list]
 
     def _save_csv(self):
         """Save plates to csv."""
