@@ -7,10 +7,11 @@ import pytesseract as tess
 import torchvision.transforms as transforms
 from tqdm import tqdm
 
+import constants as c
+
 logger = logging.getLogger(__name__)
 
 
-# todo annotate plate reader
 def plate_reader(
         image_dir: str,
         csv_in_path: str = None,
@@ -18,7 +19,7 @@ def plate_reader(
         im_show=False
 ):
     # set pytesseract as environment var
-    tess.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
+    tess.pytesseract.tesseract_cmd = c.PYTESSERACT_ENV_VAR_PATH
 
     _dir = os.listdir(image_dir)
     plate_dict = {
@@ -38,14 +39,14 @@ def plate_reader(
         # open the plate image with cv2
         plt_pth = f'{image_dir}/{filename}'
         img = cv2.imread(plt_pth)  # open img
-        bar.set_description(f'Predicting plate size: {img.shape[0]}')
+        bar.set_description(f'Predicting plate: {filename}')
 
         # logger.debug('shape when opened %s', img.shape)
 
         # transforms
-        rad = 1
+        blur_radius = 1
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # grayscale
-        img = cv2.GaussianBlur(img, (rad, rad), 0)  # blur to denoise
+        img = cv2.GaussianBlur(img, (blur_radius, blur_radius), 0)  # blur to denoise
         h, w = img.shape
         crop_h, crop_w = int(h * 280 / 512), int(w * 450 / 512)
         resize_h = 256
@@ -93,8 +94,8 @@ def plate_reader(
 
     if csv_in_path is not None:
         return plate_dict['Real Plate'], plate_dict['Predicted Plate']
-    else:
-        return plate_dict['Predicted Plate']
+
+    return plate_dict['Predicted Plate']
 
 
 if '__main__' == __name__:

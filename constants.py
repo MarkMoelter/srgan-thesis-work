@@ -17,4 +17,5 @@ IMG_DIR = 'Results/Images'
 VAL_CSV_PATH = 'Results/CSVs/testing/metrics.csv'
 
 # Accuracy
+PYTESSERACT_ENV_VAR_PATH = r'C:\Program Files\Tesseract-OCR\tesseract'
 ACC_CSV_PATH = 'Results/CSVs/recog&acc/Final_Accuracy.csv'
