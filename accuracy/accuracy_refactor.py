@@ -4,6 +4,7 @@ from itertools import zip_longest
 
 logger = logging.getLogger(__name__)
 
+
 class Accuracy:
     def __init__(self, DataFrame, label_col_name):
         # Dataframe
@@ -14,13 +15,14 @@ class Accuracy:
         self.label_col_val = self.df[label_col_name].tolist()
 
     @staticmethod
-    def string_accuracy(label: str, prediction: str):
+    def string_accuracy(label: str, prediction: str) -> float:
         """
         Compute the accuracy between two strings.
-        :param label:
-        :param prediction:
-        :return: Accuracy Value of
+        :param label: The correct label.
+        :param prediction: The prediction to be checked for accuracy.
+        :return: The accuracy between the two strings.
         """
+
         # check if not string
         if type(prediction) is not str:
             error_mes = f'{prediction} is not a string'
@@ -41,7 +43,7 @@ class Accuracy:
 
         return num_matches / max(len(label), len(prediction))
 
-    def column_accuracy(self, pred_list: list):
+    def column_accuracy(self, pred_list: list) -> float:
         """
         Calculate the accuracy between 2 lists of equal length.
         :param pred_list: List of predictions
@@ -67,26 +69,15 @@ class Accuracy:
         # return the mean of all string's accuracy
         return statistics.mean(acc_list)
 
-    def accuracy(self, pred_col_names: list):
+    def accuracy(self, pred_col_names: list[str]) -> list[float]:
         """
         Collect the list of all accuracies of each of the column names.
 
         :param pred_col_names: List of column names to compare with the labels
-        :return: List of all specified column's accuracy
+        :return: List of the specified column's accuracy
         """
-        res_list = []
-        for col_name in pred_col_names:
 
-            # convert column to list
-            col_val = self.df[col_name].tolist()
-
-            # accuracy of that label and prediction columns
-            column_acc = Accuracy.column_accuracy(self, col_val)
-
-            # append to list
-            res_list.append(column_acc)
-
-        return res_list
-
-# todo implement accuracy in main program
-# todo start a master file of all optimized files
+        return [
+            self.column_accuracy(self.df[col_name].tolist())
+            for col_name in pred_col_names
+        ]
