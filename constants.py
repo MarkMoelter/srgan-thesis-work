@@ -1,6 +1,6 @@
-LR_LIST = [16, 32, 64]
-HR_LIST = [64, 128, 256, 512]
-SCALE_TUPLE = (2, 4, 8)
+LR_TO_TEST = [16, 32, 64]
+HR_TO_TEST = [64, 128, 256, 512]
+SCALE_FACTOR = [2, 4, 8]
 
 PARAM_PATH = 'Results/params'
 GEN_PARAM_FILENAME = 'gen_params.pth'
