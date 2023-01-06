@@ -1,3 +1,8 @@
+import logging
+
+from main import logger
+
+
 def create_pth(path: str) -> str:
     """
     Create a folder if it does not already exist at that path. Returns the path.
@@ -14,8 +19,8 @@ def create_pth(path: str) -> str:
 def log_init(
         name: str = None,
         filepath: str = 'logs',
-        level='logging.DEBUG'
-):
+        level: str | int = 'DEBUG'
+) -> logging.Logger:
     """
     Initializes logger and names file using today's date.
 
@@ -24,7 +29,6 @@ def log_init(
     :param filepath: Filepath to logs
     :return: logger object to use in functions
     """
-    import logging
     import datetime as dt
 
     # collect date
@@ -46,34 +50,13 @@ def log_init(
 
     # create logger object and set the level
     logger = logging.getLogger(name)
-    logger.setLevel(eval(level))
+    logger.setLevel(level)
 
     # add handlers to logger object
     logger.addHandler(fh)
     logger.addHandler(sh)
 
     return logger
-
-
-def image_size_combos(
-        lr_list: list[int],
-        sr_list: list[int],
-        except_list: list[str]
-) -> list[str]:
-    """
-    Generator function that creates a list of image size combinations.
-    :param lr_list: List of low resolution image sizes.
-    :param sr_list: List of desired super resolution image sizes.
-    :param except_list: List of exceptions to skip when generating the list.
-    :return: List of image size combinations.
-    """
-
-    return [
-        f'{LR}-{SR}'  # expression
-        for LR in lr_list  # low res images
-        for SR in sr_list  # sure res images
-        if f'{LR}-{SR}' not in except_list  # exceptions
-    ]
 
 
 def tone(duration=3, note='a'):
@@ -113,3 +96,47 @@ def img_save(
             image = utils.make_grid(image, nrow=nrow)  # number of images in each row
         img_out = f'{save_path}/{zfill_idx}.png'
         utils.save_image(image, img_out)
+
+
+def combo_strings(
+        lr_list: list[int],
+        sr_list: list[int],
+        except_list: list[str]
+) -> list[str]:
+    """
+    Generator function that creates a list of image size combinations.
+    Used for a dictionary of size combinations in accuracy files.
+
+    :param lr_list: List of low resolution image sizes.
+    :param sr_list: List of desired super resolution image sizes.
+    :param except_list: List of exceptions to skip when generating the list.
+    :return: List of image size combinations.
+    """
+
+    return [
+        f'{LR}-{SR}'
+        for LR in lr_list
+        for SR in sr_list
+        if f'{LR}-{SR}' not in except_list
+    ]
+
+
+def combo_tuples(
+        low_res_list: list[int],
+        high_res_list: list[int],
+        scale_factors: list[int],
+) -> list[tuple[int, int]]:
+    """
+    Generate size combination tuples. Used for the SRGAN image sizes themselves.
+
+    :return: List of tuples ordered: (low, high)
+    """
+    combos = []
+    for lr in low_res_list:
+        for hr in high_res_list:
+            if (hr // lr) not in scale_factors:
+                continue
+            combos.append((lr, hr))
+
+    logger.debug(f'Combinations: {combos}')
+    return combos
