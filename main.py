@@ -41,10 +41,10 @@ def recognition_main():
 
 # accuracy
 def accuracy_main():
-    lr = [16, 32, 64]
-    sr = [64, 128, 256, 512]
-    exceptions = ['16-256', '16-512', '32-512', '64-64']
-    lr_sr_size_list = helpers.combo_strings(lr, sr, exceptions)
+    lr_sr_size_list = [
+        f'{lr}-{sr}'
+        for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST)
+    ]
 
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
     predicted_plates = pd.read_csv(plt_csv)  # read csv
@@ -53,7 +53,7 @@ def accuracy_main():
     real_plates = predicted_plates[f'Real Plates'].tolist()
 
     # benchmark accuracy
-    for num in sr:
+    for num in c.HR_TO_TEST:
         logger.info(
             f"{num}_Benchmark Accuracy: "
             f"{accuracy.df_cycle(real_plates, [predicted_plates[f'{num}_Benchmark'].tolist()])}"
