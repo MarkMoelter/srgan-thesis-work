@@ -8,10 +8,6 @@ from gan import MultiSizeRunner
 
 # plate recognition
 def recognition_main():
-    lr_list = [16, 32, 64]
-    sr_list = [64, 128, 256, 512]
-    exceptions = ['16-256', '16-512', '32-512', '64-64']
-
     csv_pth = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
     plate_df = pd.read_csv(csv_pth)
 
@@ -27,24 +23,20 @@ def recognition_main():
     plate_df.to_csv(csv_pth, index=False)
 
     # all SR combos
-    for LR in lr_list:
-        for SR in sr_list:
-            if f'{LR}-{SR}' in exceptions:
-                continue
+    for LR, SR in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
+        # LR images
+        LR_img_path = f'Results/Images/{LR}to{SR}/LR'
+        pred = accuracy.plate_reader(LR_img_path, im_show=False)
+        plate_df[f'LR:{LR}'] = pred
+        plate_df.to_csv(csv_pth, index=False)
+        logger.info(f'{LR} LR Predictions saved')
 
-            # LR images
-            LR_img_path = f'Results/Images/{LR}to{SR}/LR'
-            pred = accuracy.plate_reader(LR_img_path, im_show=False)
-            plate_df[f'LR:{LR}'] = pred
-            plate_df.to_csv(csv_pth, index=False)
-            logger.info(f'{LR} LR Predictions saved')
-
-            # SR images
-            SR_img_path = f'Results/Images/{LR}to{SR}/SR'
-            pred = accuracy.plate_reader(SR_img_path, im_show=False)
-            plate_df[f'SR:{LR}-{SR}'] = pred
-            plate_df.to_csv(csv_pth, index=False)
-            logger.info(f'{SR} SR Predictions saved')
+        # SR images
+        SR_img_path = f'Results/Images/{LR}to{SR}/SR'
+        pred = accuracy.plate_reader(SR_img_path, im_show=False)
+        plate_df[f'SR:{LR}-{SR}'] = pred
+        plate_df.to_csv(csv_pth, index=False)
+        logger.info(f'{SR} SR Predictions saved')
 
 
 # accuracy
