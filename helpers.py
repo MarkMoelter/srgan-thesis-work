@@ -124,19 +124,16 @@ def combo_strings(
 def combo_tuples(
         low_res_list: list[int],
         high_res_list: list[int],
-        scale_factors: list[int],
+        scale_factors: list[int] = (2, 4, 8)
 ) -> list[tuple[int, int]]:
     """
     Generate size combination tuples. Used for the SRGAN image sizes themselves.
 
     :return: List of tuples ordered: (low, high)
     """
-    combos = []
-    for lr in low_res_list:
-        for hr in high_res_list:
-            if (hr // lr) not in scale_factors:
-                continue
-            combos.append((lr, hr))
-
-    logger.debug(f'Combinations: {combos}')
-    return combos
+    return [
+        (lr, hr)
+        for lr in low_res_list
+        for hr in high_res_list
+        if (hr // lr) in scale_factors
+    ]
