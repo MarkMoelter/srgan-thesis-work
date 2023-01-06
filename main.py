@@ -60,9 +60,15 @@ def accuracy_main():
         )
 
     # lr accuracy
-    lr_col_list = [f'LR:{val}' for val in c.LR_TO_TEST]  # list of column names
+    lr_col_list = [
+        f'LR:{val}'
+        for val in c.LR_TO_TEST
+    ]  # list of column names
     # nested lists of predicted plates
-    lr_acc_test_plts = [predicted_plates[f'{val}'].tolist() for val in lr_col_list]
+    lr_acc_test_plts = [
+        predicted_plates[f'{val}'].tolist()
+        for val in lr_col_list
+    ]
 
     lr_size = accuracy.df_cycle(real_plates, lr_acc_test_plts)
     logger.info(f'LR Acc: {lr_size}')  # log
