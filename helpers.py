@@ -1,7 +1,5 @@
 import logging
 
-from main import logger
-
 
 def create_pth(path: str) -> str:
     """
@@ -96,29 +94,6 @@ def img_save(
             image = utils.make_grid(image, nrow=nrow)  # number of images in each row
         img_out = f'{save_path}/{zfill_idx}.png'
         utils.save_image(image, img_out)
-
-
-def combo_strings(
-        lr_list: list[int],
-        sr_list: list[int],
-        except_list: list[str]
-) -> list[str]:
-    """
-    Generator function that creates a list of image size combinations.
-    Used for a dictionary of size combinations in accuracy files.
-
-    :param lr_list: List of low resolution image sizes.
-    :param sr_list: List of desired super resolution image sizes.
-    :param except_list: List of exceptions to skip when generating the list.
-    :return: List of image size combinations.
-    """
-
-    return [
-        f'{LR}-{SR}'
-        for LR in lr_list
-        for SR in sr_list
-        if f'{LR}-{SR}' not in except_list
-    ]
 
 
 def combo_tuples(
