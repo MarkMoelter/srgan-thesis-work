@@ -6,27 +6,6 @@ import accuracy
 from gan import MultiSizeRunner
 
 
-def combinations(
-        low_res_list: list[int],
-        high_res_list: list[int],
-        scale_factors: list[int],
-) -> list[tuple[int, int]]:
-    """
-    Generate size combination tuples.
-
-    :return: List of tuples ordered: (low, high)
-    """
-    combos = []
-    for lr in low_res_list:
-        for hr in high_res_list:
-            if (hr // lr) not in scale_factors:
-                continue
-            combos.append((lr, hr))
-
-    logger.debug(f'Combinations: {combos}')
-    return combos
-
-
 # plate recognition
 def recognition_main():
     lr_list = [16, 32, 64]
@@ -73,7 +52,7 @@ def accuracy_main():
     lr = [16, 32, 64]
     sr = [64, 128, 256, 512]
     exceptions = ['16-256', '16-512', '32-512', '64-64']
-    lr_sr_size_list = helpers.image_size_combos(lr, sr, exceptions)
+    lr_sr_size_list = helpers.combo_strings(lr, sr, exceptions)
 
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
     predicted_plates = pd.read_csv(plt_csv)  # read csv
@@ -114,7 +93,7 @@ def accuracy_main():
 def main():
     logger.info('Starting main()')
     # generate tuples of combinations and scale factors desired
-    combos_to_test = combinations(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
+    combos_to_test = helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
 
     ### Deep Learning Model ###
     # create multi model object
@@ -135,7 +114,7 @@ def main():
 
 
 if '__main__' == __name__:
-    # enables relative paths
+    # enables relative path
     # os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
 
     # logging init
