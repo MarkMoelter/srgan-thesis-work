@@ -2,7 +2,8 @@ LR_TO_TEST = [16, 32, 64]
 HR_TO_TEST = [64, 128, 256, 512]
 SCALE_FACTOR = [2, 4, 8]
 
-# Dataset generation paths
+# Dataset generation
+SETS = 6
 IMG_DIR = 'data_gen/master_dataset'
 LABEL_PATH = 'data_gen/image_labels.csv'
 
