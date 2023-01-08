@@ -7,8 +7,7 @@ from .plate_generator import PlateGenerator
 from .plate_templates import RectangularPlate
 
 
-def generate_dataset():
-    SETS = 6
+def generate_dataset(sets: int, image_directory: str, label_path: str) -> None:
     IMG_DIR = 'data_gen/master_dataset'
     CSV_PATH = 'data_gen/image_labels.csv'
 
@@ -16,7 +15,7 @@ def generate_dataset():
     # master_csv = f'Results/CSVs/Master_Dataset.csv'
 
     gen = PlateGenerator(RectangularPlate)
-    plates = gen.generate_plate_sets(SETS)
+    plates = gen.generate_plate_sets(sets)
 
     plate_list = [
         [plate.filename, plate.label]
