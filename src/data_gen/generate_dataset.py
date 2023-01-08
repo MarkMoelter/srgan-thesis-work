@@ -3,11 +3,11 @@ import os
 import pandas as pd
 from tqdm import tqdm
 
-from plate_generator import PlateGenerator
+from .plate_generator import PlateGenerator
 from .plate_templates import RectangularPlate
 
 
-def dataset_generate():
+def generate_dataset():
     SETS = 6
     IMG_DIR = 'data_gen/master_dataset'
     CSV_PATH = 'data_gen/image_labels.csv'
@@ -35,4 +35,4 @@ def dataset_generate():
 if __name__ == '__main__':
     os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
 
-    dataset_generate()
+    generate_dataset()
