@@ -106,7 +106,7 @@ def main():
         blur_radius=5)
 
     if GENERATE_DATA:
-        generate_dataset()
+        generate_dataset(6, c.IMG_DIR, c.LABEL_PATH)
     if TRAIN_MODEL:
         logger.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
     if VALIDATE_MODEL:
