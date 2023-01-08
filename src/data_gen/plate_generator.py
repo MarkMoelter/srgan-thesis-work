@@ -14,34 +14,27 @@ class PlateGenerator:
 
     def multi_plates(self, sets: int = 1) -> list[Plate]:
         """
-        Generate a list of plate objects.
+        Generate a list of plates for the given characters and positions available.
 
-        EQ: sets * characters * x-positions
-
-        :param sets: The number of sets to generate.
+        :param sets: The number of set multiples to generate.
         :return: A list of plate objects.
         """
 
         return [
-            self.single_plate(char, x)
+            self.generate_plate(self.generate_label(char, x))
             for x in self.template.x_pos
             for char in self.template.available_chars
             for _ in tqdm(range(sets))
         ]
 
-    def single_plate(self, character: str, x_position: int) -> Plate:
+    def generate_plate(self, label) -> Plate:
         """
         Generate a single Plate object given a character and a pixel position.
 
-        :param character: Character to map to the x_pos param.
-        :param x_position: Position in pixel coordinates.
+        :param label: The label to generate the plate with
         :return: Plate object with the given character in the given position.
         """
-        self.char_error(character)
-        self.pos_error(x_position)
-
         with Image.open(self.template.base_image_path).convert('RGBA') as base:
-            label = self.generate_label(character, x_position)
 
             # create a transparent layer
             text_layer = Image.new(
@@ -79,10 +72,12 @@ class PlateGenerator:
         :param x_position: Position in pixel coordinates.
         :return: String label with the given character in the given position.
         """
-
-        # raise Exceptions
-        self.pos_error(x_position)
-        self.char_error(character)
+        # invalid position
+        if x_position not in self.template.x_pos:
+            raise ValueError('Invalid position')
+        # invalid character
+        if character not in self.template.available_chars:
+            raise ValueError('Invalid character')
 
         label = []
         for x in self.template.x_pos:
@@ -92,11 +87,3 @@ class PlateGenerator:
                 label.append(random.choice(self.template.available_chars))
 
         return ''.join(label)
-
-    def char_error(self, character: str):
-        if character not in self.template.available_chars:
-            raise ValueError('Invalid character')
-
-    def pos_error(self, position: int):
-        if position not in self.template.x_pos:
-            raise ValueError('Invalid position')
