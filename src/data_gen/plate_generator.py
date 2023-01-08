@@ -12,7 +12,7 @@ class PlateGenerator:
     def __init__(self, plate_template: Template):
         self.template = plate_template
 
-    def multi_plates(self, sets: int = 1) -> list[Plate]:
+    def generate_plate_sets(self, sets: int = 1) -> list[Plate]:
         """
         Generate a list of plates for the given characters and positions available.
 
