@@ -4,7 +4,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from plate_generator import PlateGenerator
-from data_gen.plate_templates.rectangular_plate import RectangularPlate
+from .plate_templates import RectangularPlate
 
 
 def dataset_generate():
@@ -16,7 +16,7 @@ def dataset_generate():
     # master_csv = f'Results/CSVs/Master_Dataset.csv'
 
     gen = PlateGenerator(RectangularPlate)
-    plates = gen.multi_plates(SETS)
+    plates = gen.generate_plate_sets(SETS)
 
     plate_list = [
         [plate.filename, plate.label]
