@@ -1,8 +1,9 @@
 import pandas as pd
 
+import accuracy
 import constants as c
 import helpers
-import accuracy
+from data_gen import generate_dataset
 from gan import MultiSizeRunner
 
 
@@ -89,12 +90,14 @@ def accuracy_main():
 
 
 def main():
-    logger.info('Starting main()')
-    # generate tuples of combinations and scale factors desired
-    combos_to_test = helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
+    logger.info('Starting main program')
 
-    ### Deep Learning Model ###
-    # create multi model object
+    GENERATE_DATA = False
+    TRAIN_MODEL = False
+    VALIDATE_MODEL = False
+    CHECK_ACCURACY = False
+
+    combos_to_test = helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
     multi = MultiSizeRunner(
         combos_to_test,
         c.PARAM_PATH,
@@ -102,24 +105,19 @@ def main():
         c.DISC_PARAM_FILENAME,
         blur_radius=5)
 
-    # training
-    train_df = multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM)
-    logger.info(train_df.head())
+    if GENERATE_DATA:
+        generate_dataset()
+    if TRAIN_MODEL:
+        logger.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
+    if VALIDATE_MODEL:
+        logger.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
+    if CHECK_ACCURACY:
+        pass
 
-    # validation
-    val_df = multi.validation(c.VAL_DATA_PATH, c.IMG_DIR)
-    logger.info(val_df.head())
+    helpers.tone()
+    logger.info('Finished main program')
 
 
 if '__main__' == __name__:
-    # enables relative path
-    # os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
-
-    # logging init
     logger = helpers.log_init()
-
-    # program call
     main()
-
-    # tone to indicate program finished
-    helpers.tone()
