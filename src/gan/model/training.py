@@ -49,19 +49,23 @@ class Training:
         self.gen_net.train()
         self.disc_net.train()
 
-        gen_loss = []
-        disc_loss = []
+        gen_loss_values = []
+        disc_loss_values = []
 
         train_bar = tqdm(self.dataset)
-        for gen_input, real_img in train_bar:
-            # collect images
-            z = torch.autograd.Variable(gen_input).to(self.device)
-            fake_img = self.gen_net(z)
-
-            real_img = torch.autograd.Variable(real_img).to(self.device)
+        for gen_input, target_img in train_bar:
+            # put image tensors on the device
+            out_img = self.gen_net(
+                torch.autograd.Variable(gen_input).to(self.device)
+            )
+            target_img = torch.autograd.Variable(target_img).to(self.device)
 
             # compute loss
-            d_loss, g_loss = self._update_nets(real_img, fake_img)
+            out_label = self._get_label(out_img)
+            target_label = self._get_label(target_img)
+
+            disc_loss = self._update_discriminator(out_label, target_label)
+            gen_loss = self._update_generator(out_label, out_img, target_img)
 
             # update optimizers
             self.gen_optimizer.step()
@@ -72,16 +76,16 @@ class Training:
             train_bar.set_description(
                 desc=(
                     f"[{epoch}/{self.epoch_count}] "
-                    f"Loss_D: {g_loss:.4f} "
-                    f"Loss_G: {d_loss:.4f} "
+                    f"Loss_D: {gen_loss:.4f} "
+                    f"Loss_G: {disc_loss:.4f} "
                 )
             )
 
-            disc_loss.append(d_loss)
-            gen_loss.append(g_loss)
+            disc_loss_values.append(disc_loss)
+            gen_loss_values.append(gen_loss)
 
-        avg_gen_loss = stats.mean(gen_loss)
-        avg_disc_loss = stats.mean(disc_loss)
+        avg_gen_loss = stats.mean(gen_loss_values)
+        avg_disc_loss = stats.mean(disc_loss_values)
 
         # todo: another bad use of epoch
         logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {avg_gen_loss}')
@@ -89,34 +93,26 @@ class Training:
 
         return avg_disc_loss, avg_gen_loss
 
-    def _update_nets(self, real_img, fake_img):
-        """Update generator and discriminator networks"""
-        fake_label = self._get_label(fake_img)
-        real_label = self._get_label(real_img)
-        d_loss = self._update_discriminator(fake_label, real_label)
-        g_loss = self._update_generator(fake_label, fake_img, real_img)
-
-        # return loss tuple
-        return d_loss, g_loss
-
     def _get_label(self, img: torch.Tensor) -> torch.Tensor:
         """Get the label of an image from the discriminator."""
         self.disc_net.zero_grad()
         return self.disc_net(img).mean()
 
     @staticmethod
-    def _update_discriminator(fake_label, real_label):
+    def _update_discriminator(out_label, target_label):
+        """Update the discriminator after calculating the loss."""
         # compute loss
-        d_loss = 1 - real_label + fake_label
+        d_loss = 1 - target_label + out_label
         # backprop
         d_loss.backward(retain_graph=True)
         return d_loss.item()
 
-    def _update_generator(self, fake_label, fake_img, real_img):
+    def _update_generator(self, out_label, out_img, target_img):
+        """Update the generator after calculating the loss."""
         self.gen_net.zero_grad()
         # compute loss
         loss_fn = GeneratorLoss().to(self.device)
-        g_loss = loss_fn(fake_label, fake_img, real_img)
+        g_loss = loss_fn(out_label, out_img, target_img)
         # backprop
         g_loss.backward()
 
