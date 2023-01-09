@@ -2,6 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def str_compare(str1: str, str2: str):
     """
     Compares two strings, and returns a value between 0 and 1 for accuracy.
@@ -19,6 +20,7 @@ def str_compare(str1: str, str2: str):
         if c1 == c2:
             num_matches += 1
     return num_matches / len(str2)
+
 
 def column_acc_mean(act_list: list, pred_list: list):
     """
@@ -41,6 +43,7 @@ def column_acc_mean(act_list: list, pred_list: list):
 
     mean_acc = statistics.mean(acc_list)  # take the mean of the column's accuracy
     return mean_acc
+
 
 # todo remove this function and replace with accuracy class
 def df_cycle(label_val_list, col_name_list):
