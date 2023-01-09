@@ -17,20 +17,11 @@ logger = logging.getLogger(__name__)
 # TODO: Get rid of plate_reader from main.py
 # TODO: Refactor next
 class PlateReader:
-    def __init__(
-            self,
-            image_dir: str,
-            label_csv_path: str = None,
-            prediction_csv_path: str = None,
-            image_show: bool = False
-    ):
+    def __init__(self, image_dir: str, prediction_csv_path: str = None, image_show: bool = False):
         self.image_dir = image_dir
-        self.label_csv_path = label_csv_path
         self.prediction_csv_path = prediction_csv_path
-        self.image_show = image_show
-        self.plate_obj_list = []
 
-    def reader_loop(self):
+    def reader_loop(self, image_show: bool = False):
         """
         Read the characters from the plates and store them in a Dataframe.
         """
@@ -38,20 +29,20 @@ class PlateReader:
         tess.pytesseract.tesseract_cmd = c.PYTESSERACT_ENV_VAR_PATH
 
         bar = tqdm(os.listdir(self.image_dir), desc='Predicting plates')
-
+        plates = []
         # loop through all files in a dir
         for filename in bar:
+            path = os.path.join(self.image_dir, filename)
 
             # skip iteration if file does not exist
-            if not os.path.isfile(os.path.join(self.image_dir, filename)):
+            if not os.path.isfile(path):
                 continue
 
             bar.set_description(f'Predicting plate: {filename}')
 
-            plate_path = f'{self.image_dir}/{filename}'
-            transformed_plate = self._transform(plate_path)
+            transformed_plate = self._transform(path)
 
-            if self.image_show:
+            if image_show:
                 transformed_plate.show()
 
             # generate the prediction
@@ -66,13 +57,13 @@ class PlateReader:
             filter_prediction = self._filter_string(prediction, blacklist_chars)
 
             # add to the plate list
-            self.plate_obj_list.append(Plate(filename, filename, filter_prediction))
+            plates.append(Plate(filename, filename, filter_prediction))
 
         # save a csv
         if self.prediction_csv_path is not None:
-            self._save_csv()
+            self._save_csv(plates)
 
-        return [plate.prediction for plate in self.plate_obj_list]
+        return [plate.prediction for plate in plates]
 
     @staticmethod
     def _filter_string(prediction: str, blacklist: list[str]):
@@ -127,8 +118,12 @@ class PlateReader:
             )
         ])(img)
 
-    def _save_csv(self):
-        """Save plates to csv."""
+    def _save_csv(self, plates: list[Plate]) -> None:
+        """
+        Save plates to csv.
+
+        :param plates: List of plate objects.
+        """
         pd.DataFrame(
-            data=[plate.prediction for plate in self.plate_obj_list]
+            data=[plate.prediction for plate in plates]
         ).to_csv(self.prediction_csv_path, index=False)
