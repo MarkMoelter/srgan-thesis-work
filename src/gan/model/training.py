@@ -10,6 +10,7 @@ from gan.loss import GeneratorLoss
 logger = logging.getLogger(__name__)
 
 
+# todo: refactor into useful methods instead of breaking up a large function into different parts of a huge class.
 class Training:
     """Implement each step in the model training phase"""
 
@@ -19,18 +20,18 @@ class Training:
         self.dataset = dataset
         self.gen_net = gen_net.to(self.device)
         self.disc_net = disc_net.to(self.device)
+        self.gen_optimizer = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
+        self.disc_optimizer = torch.optim.Adam(self.disc_net.parameters(), lr=0.002)
+
         self.param_dir = param_dir
         self.epoch_count = epoch_count
 
-    def training(self) -> tuple[list[float], list[float]]:
+    def train_model(self) -> tuple[list[float], list[float]]:
         # optimizers
-        gen_optimizer = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
-        disc_optimizer = torch.optim.Adam(self.disc_net.parameters(), lr=0.002)
-
         gen_loss = []
         disc_loss = []
         for epoch in range(1, 1 + self.epoch_count):
-            d_loss, g_loss = self.train_epoch(epoch, gen_optimizer, disc_optimizer)
+            d_loss, g_loss = self.train_epoch(epoch)
 
             gen_loss.append(g_loss)
             disc_loss.append(d_loss)
@@ -42,7 +43,9 @@ class Training:
 
         return disc_loss, gen_loss
 
-    def train_epoch(self, epoch, gen_optim, disc_optim):
+    def train_epoch(self, epoch):
+        # todo: remove epoch parameter
+
         self.gen_net.train()
         self.disc_net.train()
 
@@ -61,9 +64,10 @@ class Training:
             d_loss, g_loss = self.update_nets(real_img, fake_img)
 
             # update optimizers
-            gen_optim.step()
-            disc_optim.step()
+            self.gen_optimizer.step()
+            self.disc_optimizer.step()
 
+            # todo: move all messages into a separate class? bad use of epoch
             # set bar description
             train_bar.set_description(
                 desc=(
@@ -78,6 +82,8 @@ class Training:
 
         gen_loss = stats.mean(gen_loss)
         disc_loss = stats.mean(disc_loss)
+
+        # todo: another bad use of epoch
         logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {gen_loss}')
         logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {disc_loss}')
 
