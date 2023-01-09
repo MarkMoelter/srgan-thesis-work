@@ -34,14 +34,13 @@ def accuracy_main():
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
     predicted_plates = pd.read_csv(plt_csv)  # read csv
 
-    # plate labels
-    real_plates = predicted_plates[f'Real Plates'].tolist()
+    acc = accuracy.Accuracy(predicted_plates, 'Real Plates')
 
     # benchmark accuracy
     for num in c.HR_TO_TEST:
         logger.info(
             f"{num}_Benchmark Accuracy: "
-            f"{accuracy.df_cycle(real_plates, [predicted_plates[f'{num}_Benchmark'].tolist()])}"
+            f"{acc.accuracy([predicted_plates[f'{num}_Benchmark'].tolist()])}"
         )
 
     # lr accuracy
@@ -55,7 +54,7 @@ def accuracy_main():
         for val in lr_col_list
     ]
 
-    lr_size = accuracy.df_cycle(real_plates, lr_acc_test_plts)
+    lr_size = acc.accuracy(lr_acc_test_plts)
     logger.info(f'LR Acc: {lr_size}')  # log
 
     # sr accuracy
@@ -63,7 +62,7 @@ def accuracy_main():
     # nested lists of predicted plates
     sr_acc_test_plts = [predicted_plates[f'{val}'].tolist() for val in sr_col_list]
 
-    sr_size = accuracy.df_cycle(real_plates, sr_acc_test_plts)
+    sr_size = acc.accuracy(sr_acc_test_plts)
     logger.info(f'SR Acc: {sr_size}')  # log
 
     # convert to dataframe and save as csv

@@ -1,66 +1,81 @@
 import logging
+import statistics
+from itertools import zip_longest
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
 
-def str_compare(str1: str, str2: str):
-    """
-    Compares two strings, and returns a value between 0 and 1 for accuracy.
-    """
-    from itertools import zip_longest
+class Accuracy:
+    def __init__(self, df: pd.DataFrame, label_col_name):
+        self.df = df
+        self.label_col_val = self.df[label_col_name].tolist()
 
-    if type(str2) is not str:
-        return 0
-    elif str1 == str2:
-        return 1
+    @staticmethod
+    def string_accuracy(label: str, prediction: str) -> float:
+        """
+        Compute the accuracy between two strings.
+        :param label: The correct label.
+        :param prediction: The prediction to be checked for accuracy.
+        :return: The accuracy between the two strings.
+        """
 
-    # loop that checks each value in strings
-    num_matches = 0
-    for c1, c2 in zip_longest(str1, str2):
-        if c1 == c2:
-            num_matches += 1
-    return num_matches / len(str2)
-
-
-def column_acc_mean(act_list: list, pred_list: list):
-    """
-    Compares 2 lists of equal length. Return the mean of the column.
-    """
-    import statistics
-    # check if not list
-    if (type(act_list) or type(pred_list)) is not list:
-        logger.error('Only lists are allowed')
-        raise TypeError('Only lists are allowed')
-
-    # if lengths are equal
-    elif len(act_list) != len(pred_list):
-        logger.error('Lists are not the same length')
-        raise ValueError('Lists are not the same length')
-
-    acc_list = []
-    for actual, predict in zip(act_list, pred_list):
-        acc_list.append(str_compare(actual, predict))
-
-    mean_acc = statistics.mean(acc_list)  # take the mean of the column's accuracy
-    return mean_acc
-
-
-# todo remove this function and replace with accuracy class
-def df_cycle(label_val_list, col_name_list):
-    """
-    Use DataFrame column names to cycle
-    through each column and return the accuracy
-    """
-    mean_acc_list = []
-    for val in col_name_list:
-        logging.debug(len(val))
-        logging.debug(len(label_val_list))
-        # fixme shorten this try except block
-        try:
-            col_acc = round(column_acc_mean(label_val_list, val) * 100, 2)
-            mean_acc_list.append(col_acc)
-        except KeyError:
-            error_mes = f'Key: {val} not found'
+        # check if not string
+        if type(prediction) is not str:
+            error_mes = f'{prediction} is not a string'
             logger.error(error_mes)
-            raise KeyError(error_mes)
-    return mean_acc_list
+            raise ValueError(error_mes)
+
+        # check if identical
+        elif label == prediction:
+            return 1
+
+        # element to element comparison
+        num_matches = 0
+        for c1, c2 in zip_longest(label, prediction):
+
+            # add one if identical
+            if c1 == c2:
+                num_matches += 1
+
+        return num_matches / max(len(label), len(prediction))
+
+    def column_accuracy(self, pred_list: list) -> float:
+        """
+        Calculate the accuracy between 2 lists of equal length.
+        :param pred_list: List of predictions
+        :return: Average accuracy of the lists
+        """
+
+        # check if not list
+        if (type(self.label_col_val) or type(pred_list)) is not list:
+            logger.error('Only lists are allowed')
+            raise TypeError('Only lists are allowed')
+
+        # if lengths are equal
+        elif len(self.label_col_val) != len(pred_list):
+            logger.error('Lists are not the same length')
+            raise ValueError('Lists are not the same length')
+
+            # accuracy between strings as lists
+        acc_list = [
+            self.string_accuracy(label, predict)
+            for label, predict in zip(self.label_col_val, pred_list)
+        ]
+
+        # return the mean of all string's accuracy
+        return statistics.mean(acc_list)
+
+    def accuracy(self, pred_col_names: list[str]) -> list[float]:
+        """
+        Collect the list of all accuracies of each of the column names.
+
+        :param pred_col_names: List of column names to compare with the labels
+        :return: List of the specified column's accuracy
+        """
+
+        return [
+            self.column_accuracy(self.df[col_name].tolist())
+            for col_name in pred_col_names
+        ]
