@@ -80,14 +80,14 @@ class Training:
             disc_loss.append(d_loss)
             gen_loss.append(g_loss)
 
-        gen_loss = stats.mean(gen_loss)
-        disc_loss = stats.mean(disc_loss)
+        avg_gen_loss = stats.mean(gen_loss)
+        avg_disc_loss = stats.mean(disc_loss)
 
         # todo: another bad use of epoch
-        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {gen_loss}')
-        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {disc_loss}')
+        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {avg_gen_loss}')
+        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {avg_disc_loss}')
 
-        return disc_loss, gen_loss
+        return avg_disc_loss, avg_gen_loss
 
     def update_nets(self, real_img, fake_img):
         """Update generator and discriminator networks"""
