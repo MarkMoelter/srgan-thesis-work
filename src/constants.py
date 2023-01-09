@@ -12,7 +12,6 @@ BENCHMARK_PATH = 'data_gen/images'
 LOW_RES_PATH = 'Results/Images/LR'
 SUPER_RES_PATH = 'Results/Images/SR'
 
-
 # Model paths
 PARAM_PATH = 'Results/params'
 GEN_PARAM_FILENAME = 'gen_params.pth'
