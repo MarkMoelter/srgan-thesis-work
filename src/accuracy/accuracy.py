@@ -67,6 +67,7 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     # return the mean of all string's accuracy
     return statistics.mean(acc_list)
 
+
 def accuracy(
         dataframe: pd.DataFrame,
         labels: list[str],
@@ -86,22 +87,3 @@ def accuracy(
         column_accuracy(labels, predictions=dataframe[col_name].tolist())
         for col_name in prediction_headers
     ]
-
-class Accuracy:
-    def __init__(self, df: pd.DataFrame, label_col_name: str):
-        self.df = df
-        self.labels: list[str] = self.df[label_col_name].tolist()
-
-    def accuracy(self, prediction_headers: list[str]) -> list[float]:
-        """
-        Collect the list of all accuracies of each of the column names.
-
-        :param prediction_headers: List of column names for different predictions
-         to compare with the labels.
-        :return: List of the specified column's accuracy.
-        """
-
-        return [
-            column_accuracy(self.labels, predictions=self.df[col_name].tolist())
-            for col_name in prediction_headers
-        ]
