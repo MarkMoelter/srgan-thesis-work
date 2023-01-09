@@ -8,36 +8,50 @@ from gan import MultiSizeRunner
 
 
 # plate recognition
-def recognition_main():
-    csv_pth = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
-    plate_df = pd.read_csv(csv_pth)
+def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Uses OCR to recognize the high resolution and low resolution plates.
 
-    for h_res in [64, 128, 256]:
-        img_path = f'Results/Images/{h_res}'
-        plate_df[f'{h_res}_Benchmark'] = accuracy.plate_reader(img_path, im_show=False)
-        plate_df.to_csv(csv_pth, index=False)
+    :param plate_df: The dataframe containing the plate labels.
+    """
+    # collect the OCR predictions
+    plate_df = benchmark_recognition(plate_df)
+    plate_df = low_resolution_recognition(plate_df)
+    plate_df = high_resolution_recognition(plate_df)
 
-    benchmark = 'Results/master_dataset/testing_set'
-    plate_df['512_Benchmark'] = accuracy.plate_reader(benchmark, im_show=False)
+    logger.info('Plate predictions finished')
+    return plate_df
 
-    logger.debug(plate_df.head())
-    plate_df.to_csv(csv_pth, index=False)
 
-    # all SR combos
-    for LR, SR in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
-        # LR images
-        LR_img_path = f'Results/Images/{LR}to{SR}/LR'
-        pred = accuracy.plate_reader(LR_img_path, im_show=False)
-        plate_df[f'LR:{LR}'] = pred
-        plate_df.to_csv(csv_pth, index=False)
-        logger.info(f'{LR} LR Predictions saved')
+def benchmark_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
+    """OCR recognition for the benchmark images."""
+    for img_size in [64, 128, 256, 512]:
+        img_path = f'{c.BENCHMARK_PATH}/{img_size}'
+        plate_df[f'{img_size}_Benchmark'] = accuracy.plate_reader(img_path, im_show=False)
 
-        # SR images
-        SR_img_path = f'Results/Images/{LR}to{SR}/SR'
-        pred = accuracy.plate_reader(SR_img_path, im_show=False)
-        plate_df[f'SR:{LR}-{SR}'] = pred
-        plate_df.to_csv(csv_pth, index=False)
-        logger.info(f'{SR} SR Predictions saved')
+    logger.info(f'Benchmark predictions finished')
+    return plate_df
+
+
+def low_resolution_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
+    """OCR recognition for the low resolution images."""
+    for lr in c.LR_TO_TEST:
+        path = f'{c.LOW_RES_PATH}/{lr}'
+        lr_predictions = accuracy.plate_reader(path, im_show=False)
+        plate_df[f'LR:{lr}'] = lr_predictions
+
+    logger.info(f'LR predictions finished')
+    return plate_df
+
+
+def high_resolution_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
+    for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
+        path = f'{c.SUPER_RES_PATH}/{lr}-{sr}'
+        sr_predictions = accuracy.plate_reader(path, im_show=False)
+        plate_df[f'SR:{lr}-{sr}'] = sr_predictions
+
+    logger.info(f'SR predictions finished')
+    return plate_df
 
 
 # accuracy
@@ -95,6 +109,7 @@ def main():
     GENERATE_DATA = False
     TRAIN_MODEL = False
     VALIDATE_MODEL = False
+    RECOGNITION = False
     CHECK_ACCURACY = False
 
     combos_to_test = helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
@@ -111,6 +126,11 @@ def main():
         logger.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
     if VALIDATE_MODEL:
         logger.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
+    if RECOGNITION:
+        result_path = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
+        df = pd.read_csv(result_path)
+        df = recognition_main(df)
+        df.to_csv(result_path)
     if CHECK_ACCURACY:
         pass
 
