@@ -6,7 +6,8 @@ import torchvision.utils as utils
 from tqdm import tqdm
 
 import helpers
-from gan.model import Generator
+from .metrics import psnr, ssim
+from .generator import Generator
 
 logger = logging.getLogger(__name__)
 
