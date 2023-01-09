@@ -31,7 +31,7 @@ class Training:
         gen_loss = []
         disc_loss = []
         for epoch in range(1, 1 + self.epoch_count):
-            d_loss, g_loss = self.train_epoch(epoch)
+            d_loss, g_loss = self._train_epoch(epoch)
 
             gen_loss.append(g_loss)
             disc_loss.append(d_loss)
@@ -43,7 +43,7 @@ class Training:
 
         return disc_loss, gen_loss
 
-    def train_epoch(self, epoch):
+    def _train_epoch(self, epoch):
         # todo: remove epoch parameter
 
         self.gen_net.train()
@@ -61,7 +61,7 @@ class Training:
             real_img = torch.autograd.Variable(real_img).to(self.device)
 
             # compute loss
-            d_loss, g_loss = self.update_nets(real_img, fake_img)
+            d_loss, g_loss = self._update_nets(real_img, fake_img)
 
             # update optimizers
             self.gen_optimizer.step()
@@ -89,7 +89,7 @@ class Training:
 
         return avg_disc_loss, avg_gen_loss
 
-    def update_nets(self, real_img, fake_img):
+    def _update_nets(self, real_img, fake_img):
         """Update generator and discriminator networks"""
 
         ### update discriminator ###
