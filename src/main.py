@@ -3,6 +3,7 @@ import pandas as pd
 import accuracy
 import constants as c
 import helpers
+from recognition import Recognition
 
 
 # plate recognition
@@ -14,7 +15,7 @@ def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
     """
     # TODO: Move this somewhere else
     # collect the OCR predictions
-    recog = accuracy.Recognition(plate_df)
+    recog = Recognition(plate_df)
     recog.benchmark_recognition()
     recog.low_resolution_recognition()
     recog.high_resolution_recognition()
