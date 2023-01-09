@@ -15,43 +15,13 @@ def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
     :param plate_df: The dataframe containing the plate labels.
     """
     # collect the OCR predictions
-    plate_df = benchmark_recognition(plate_df)
-    plate_df = low_resolution_recognition(plate_df)
-    plate_df = high_resolution_recognition(plate_df)
+    recog = accuracy.Recognition(plate_df)
+    recog.benchmark_recognition()
+    recog.low_resolution_recognition()
+    recog.high_resolution_recognition()
 
     logger.info('Plate predictions finished')
-    return plate_df
-
-
-def benchmark_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
-    """OCR recognition for the benchmark images."""
-    for img_size in [64, 128, 256, 512]:
-        img_path = f'{c.BENCHMARK_PATH}/{img_size}'
-        plate_df[f'{img_size}_Benchmark'] = accuracy.plate_reader(img_path, im_show=False)
-
-    logger.info(f'Benchmark predictions finished')
-    return plate_df
-
-
-def low_resolution_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
-    """OCR recognition for the low resolution images."""
-    for lr in c.LR_TO_TEST:
-        path = f'{c.LOW_RES_PATH}/{lr}'
-        lr_predictions = accuracy.plate_reader(path, im_show=False)
-        plate_df[f'LR:{lr}'] = lr_predictions
-
-    logger.info(f'LR predictions finished')
-    return plate_df
-
-
-def high_resolution_recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
-    for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
-        path = f'{c.SUPER_RES_PATH}/{lr}-{sr}'
-        sr_predictions = accuracy.plate_reader(path, im_show=False)
-        plate_df[f'SR:{lr}-{sr}'] = sr_predictions
-
-    logger.info(f'SR predictions finished')
-    return plate_df
+    return recog.df
 
 
 # accuracy
