@@ -69,7 +69,7 @@ class MultiSizeRunner:
                 gan.Generator(hr_size // lr_size),
                 gan.Discriminator(),
                 f'{self.param_path}/{lr_size}to{hr_size}',
-                epoch_count=num_epochs
+                total_epochs=num_epochs
             ).train_model()
 
         # save to dataframe and csv
