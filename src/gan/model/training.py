@@ -91,18 +91,9 @@ class Training:
 
     def _update_nets(self, real_img, fake_img):
         """Update generator and discriminator networks"""
+        fake_label = self.update_discriminator(real_img, fake_img)
 
-        ### update discriminator ###
-        self.disc_net.zero_grad()
-        # collect real and fake classifications
-        real_label = self.disc_net(real_img).mean()
-        fake_label = self.disc_net(fake_img).mean()
-        # compute loss
-        d_loss = 1 - real_label + fake_label
-        # backprop
-        d_loss.backward(retain_graph=True)
-
-        ### update generator ###
+        # update generator
         self.gen_net.zero_grad()
         # compute loss
         loss_fn = GeneratorLoss().to(self.device)
@@ -112,3 +103,16 @@ class Training:
 
         # return loss tuple
         return d_loss.item(), g_loss.item()
+
+    def update_discriminator(self, real_img, fake_img):
+
+        # update discriminator
+        self.disc_net.zero_grad()
+        # collect real and fake classifications
+        real_label = self.disc_net(real_img).mean()
+        fake_label = self.disc_net(fake_img).mean()
+        # compute loss
+        d_loss = 1 - real_label + fake_label
+        # backprop
+        d_loss.backward(retain_graph=True)
+        return fake_label
