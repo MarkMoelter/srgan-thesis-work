@@ -15,8 +15,6 @@ from plate import Plate
 logger = logging.getLogger(__name__)
 
 
-# TODO: Get rid of plate_reader from main.py
-# TODO: Refactor next
 class PlateReader:
     def __init__(self, image_dir: str, prediction_csv_path: str = None):
         self.image_dir = image_dir
