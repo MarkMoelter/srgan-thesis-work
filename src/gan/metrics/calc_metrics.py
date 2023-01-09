@@ -27,29 +27,19 @@ def tensor_to_grayscale(tensor: np.array) -> np.ndarray:
     array = tensor.cpu().squeeze(0).numpy()
     return cv2.cvtColor(array, cv2.COLOR_RGB2GRAY)
 
+def ssim(reference, prediction) -> float:
+    """Implements SSIM from skimage.metrics"""
+    val, _ = structural_similarity(
+        reshape_tensor(reference),
+        reshape_tensor(prediction),
+        full=True
+    )
+    return val
 
-class CalculateMetrics:
-    """
-    Calculate image quality metrics
-    """
-
-    def __init__(self, reference: np.ndarray, prediction: np.ndarray):
-        self.reference = reference
-        self.prediction = prediction
-
-    def psnr(self) -> float:
-        """Implements PSNR from skimage.metrics"""
-        val = peak_signal_noise_ratio(
-            reshape_tensor(self.reference),
-            reshape_tensor(self.prediction)
-        )
-        return val
-
-    def ssim(self) -> float:
-        """Implements SSIM from skimage.metrics"""
-        val, _ = structural_similarity(
-            reshape_tensor(self.reference),
-            reshape_tensor(self.prediction),
-            full=True
-        )
-        return val
+def psnr(reference, prediction) -> float:
+    """Implements PSNR from skimage.metrics"""
+    val = peak_signal_noise_ratio(
+        reshape_tensor(reference),
+        reshape_tensor(prediction)
+    )
+    return val
