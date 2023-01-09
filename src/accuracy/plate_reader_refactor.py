@@ -1,12 +1,12 @@
 import logging
 import os
-from tqdm import tqdm
-import cv2
-from PIL import Image
 
+import cv2
 import pandas as pd
 import pytesseract as tess
 import torchvision.transforms as transforms
+from PIL import Image
+from tqdm import tqdm
 
 import constants as c
 from plate import Plate
