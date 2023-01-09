@@ -28,7 +28,7 @@ class Accuracy:
             raise ValueError(error_mes)
 
         # check if identical
-        elif label == prediction:
+        if label == prediction:
             return 1
 
         # element to element comparison
@@ -39,7 +39,7 @@ class Accuracy:
             if c1 == c2:
                 num_matches += 1
 
-        return num_matches / max(len(label), len(prediction))
+        return num_matches / len(label)
 
     def column_accuracy(self, pred_list: list) -> float:
         """
@@ -76,6 +76,6 @@ class Accuracy:
         """
 
         return [
-            self.column_accuracy(self.df[col_name].tolist())
+            self.column_accuracy(pred_list=self.df[col_name].tolist())
             for col_name in pred_col_names
         ]
