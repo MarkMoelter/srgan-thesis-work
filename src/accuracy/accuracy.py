@@ -37,6 +37,36 @@ def prediction_accuracy(label: str, prediction: str) -> float:
     return num_matches / len(label)
 
 
+def column_accuracy(labels: list[str], predictions: list[str]) -> float:
+    """
+    Calculate the accuracy between 2 lists of equal length.
+
+    :param predictions: List of predictions
+    :return: Average accuracy of the lists
+    """
+
+    # check if not list
+    both_lists = isinstance(labels, list) and isinstance(predictions, list)
+    if not both_lists:
+        logger.error('Only lists are allowed')
+        raise TypeError('Only lists are allowed')
+
+    # if lengths are equal
+    len_is_equal = len(labels) == len(predictions)
+    if not len_is_equal:
+        logger.error('Lists are not the same length')
+        raise ValueError('Lists are not the same length')
+
+        # accuracy between strings as lists
+    acc_list = [
+        prediction_accuracy(label, predict)
+        for label, predict in zip(labels, predictions)
+    ]
+
+    # return the mean of all string's accuracy
+    return statistics.mean(acc_list)
+
+
 class Accuracy:
     def __init__(self, df: pd.DataFrame, label_col_name: str):
         self.df = df
