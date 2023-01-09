@@ -49,11 +49,32 @@ class Training:
         self.gen_net.train()
         self.disc_net.train()
 
+        train_bar = tqdm(self.dataset)
+        gen_loss_values, disc_loss_values = self._train_loop(train_bar)
+
+        avg_gen_loss = stats.mean(gen_loss_values)
+        avg_disc_loss = stats.mean(disc_loss_values)
+
+        # set bar description
+        train_bar.set_description(
+            desc=(
+                f"[{epoch}/{self.epoch_count}] "
+                f"Loss_D: {avg_gen_loss:.4f} "
+                f"Loss_G: {avg_disc_loss:.4f} "
+            )
+        )
+        # todo: another bad use of epoch
+        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {avg_gen_loss}')
+        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {avg_disc_loss}')
+
+        return avg_disc_loss, avg_gen_loss
+
+    def _train_loop(self, dataset) -> tuple[list[float], list[float]]:
+        """The loop that trains the model"""
         gen_loss_values = []
         disc_loss_values = []
 
-        train_bar = tqdm(self.dataset)
-        for gen_input, target_img in train_bar:
+        for gen_input, target_img in dataset:
             # put image tensors on the device
             out_img = self.gen_net(
                 torch.autograd.Variable(gen_input).to(self.device)
@@ -71,27 +92,10 @@ class Training:
             self.gen_optimizer.step()
             self.disc_optimizer.step()
 
-            # todo: move all messages into a separate class? bad use of epoch
-            # set bar description
-            train_bar.set_description(
-                desc=(
-                    f"[{epoch}/{self.epoch_count}] "
-                    f"Loss_D: {gen_loss:.4f} "
-                    f"Loss_G: {disc_loss:.4f} "
-                )
-            )
-
             disc_loss_values.append(disc_loss)
             gen_loss_values.append(gen_loss)
 
-        avg_gen_loss = stats.mean(gen_loss_values)
-        avg_disc_loss = stats.mean(disc_loss_values)
-
-        # todo: another bad use of epoch
-        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {avg_gen_loss}')
-        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {avg_disc_loss}')
-
-        return avg_disc_loss, avg_gen_loss
+            return gen_loss_values, disc_loss_values
 
     def _get_label(self, img: torch.Tensor) -> torch.Tensor:
         """Get the label of an image from the discriminator."""
