@@ -1,4 +1,5 @@
 import logging
+import pandas as pd
 import statistics
 from itertools import zip_longest
 
@@ -6,9 +7,9 @@ logger = logging.getLogger(__name__)
 
 
 class Accuracy:
-    def __init__(self, DataFrame, label_col_name):
+    def __init__(self, df: pd.DataFrame, label_col_name):
         # Dataframe
-        self.df = DataFrame
+        self.df = df
 
         # label attributes
         self.label_col_name = label_col_name
@@ -62,7 +63,7 @@ class Accuracy:
 
             # accuracy between strings as lists
         acc_list = [
-            Accuracy.string_accuracy(label, predict)
+            self.string_accuracy(label, predict)
             for label, predict in zip(self.label_col_val, pred_list)
         ]
 
