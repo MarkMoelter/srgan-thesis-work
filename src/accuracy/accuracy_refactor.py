@@ -1,7 +1,8 @@
 import logging
-import pandas as pd
 import statistics
 from itertools import zip_longest
+
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
