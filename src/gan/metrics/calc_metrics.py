@@ -16,16 +16,16 @@ def reshape_tensor(tensor: np.ndarray, order=(2, 3, 1)) -> np.ndarray:
     return tensor.reshape(reshape_list)
 
 
-def tensor_to_grayscale(tensor: np.ndarray) -> np.ndarray:
+def tensor_to_grayscale(tensor: np.array) -> np.ndarray:
     """
     Flattens an RGB tensor into a 2-dimensional grayscale array.
 
     :param tensor: RGB tensor to convert.
     :return: A 2-dimensional grayscale image.
     """
+    # put the array on the cpu,
     array = tensor.cpu().squeeze(0).numpy()
-    gray_array = cv2.cvtColor(array, cv2.COLOR_RGB2GRAY)
-    return gray_array
+    return cv2.cvtColor(array, cv2.COLOR_RGB2GRAY)
 
 
 class CalculateMetrics:
