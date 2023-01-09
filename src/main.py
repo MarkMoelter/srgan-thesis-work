@@ -3,8 +3,6 @@ import pandas as pd
 import accuracy
 import constants as c
 import helpers
-from data_gen import generate_dataset
-from gan import MultiSizeRunner
 
 
 # plate recognition
@@ -14,6 +12,7 @@ def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
 
     :param plate_df: The dataframe containing the plate labels.
     """
+    # TODO: Move this somewhere else
     # collect the OCR predictions
     recog = accuracy.Recognition(plate_df)
     recog.benchmark_recognition()
@@ -26,6 +25,7 @@ def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
 
 # accuracy
 def accuracy_main():
+    # TODO: Refactor this
     lr_sr_size_list = [
         f'{lr}-{sr}'
         for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST)
@@ -73,6 +73,9 @@ def accuracy_main():
 
 
 def main():
+    from data_gen import generate_dataset
+    from gan import MultiSizeRunner
+
     logger.info('Starting main program')
 
     GENERATE_DATA = False
@@ -81,9 +84,8 @@ def main():
     RECOGNITION = False
     CHECK_ACCURACY = False
 
-    combos_to_test = helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
     multi = MultiSizeRunner(
-        combos_to_test,
+        helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR),
         c.PARAM_PATH,
         c.GEN_PARAM_FILENAME,
         c.DISC_PARAM_FILENAME,
@@ -97,11 +99,12 @@ def main():
         logger.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
     if RECOGNITION:
         result_path = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
+
         df = pd.read_csv(result_path)
         df = recognition_main(df)
         df.to_csv(result_path)
     if CHECK_ACCURACY:
-        pass
+        accuracy_main()
 
     helpers.tone()
     logger.info('Finished main program')
