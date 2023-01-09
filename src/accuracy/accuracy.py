@@ -7,6 +7,36 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
+def prediction_accuracy(label: str, prediction: str) -> float:
+    """
+    Compute the accuracy between a label and a prediction.
+
+    :param label: The correct label.
+    :param prediction: The prediction to be checked for accuracy.
+    :return: The accuracy between the two strings.
+    """
+
+    # check if not string
+    if type(prediction) is not str:
+        error_mes = f'{prediction} is not a string'
+        logger.error(error_mes)
+        raise ValueError(error_mes)
+
+    # check if identical
+    if label == prediction:
+        return 1
+
+    # element to element comparison
+    num_matches = 0
+    for c1, c2 in zip_longest(label, prediction):
+
+        # add one if identical
+        if c1 == c2:
+            num_matches += 1
+
+    return num_matches / len(label)
+
+
 class Accuracy:
     def __init__(self, df: pd.DataFrame, label_col_name):
         self.df = df
