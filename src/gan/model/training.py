@@ -16,8 +16,7 @@ class Training:
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    def __init__(self, dataset, gen_net, disc_net, param_dir, total_epochs):
-        self.dataset = dataset
+    def __init__(self, gen_net, disc_net, param_dir, total_epochs):
         self.gen_net = gen_net.to(self.device)
         self.disc_net = disc_net.to(self.device)
         self.gen_optimizer = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
@@ -26,7 +25,7 @@ class Training:
         self.param_dir = param_dir
         self.total_epochs = total_epochs
 
-    def train_model(self) -> tuple[list[float], list[float]]:
+    def train_model(self, dataset) -> tuple[list[float], list[float]]:
         # optimizers
         gen_loss_each_epoch = []
         disc_loss_each_epoch = []
@@ -34,7 +33,7 @@ class Training:
             self.gen_net.train()
             self.disc_net.train()
 
-            train_bar = tqdm(self.dataset)
+            train_bar = tqdm(dataset)
             avg_disc_loss, avg_gen_loss = self._train_loop(train_bar)
 
             # set bar description
