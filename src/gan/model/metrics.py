@@ -27,6 +27,7 @@ def tensor_to_grayscale(tensor: np.array) -> np.ndarray:
     array = tensor.cpu().squeeze(0).numpy()
     return cv2.cvtColor(array, cv2.COLOR_RGB2GRAY)
 
+
 def ssim(reference, prediction) -> float:
     """Implements SSIM from skimage.metrics"""
     val, _ = structural_similarity(
@@ -35,6 +36,7 @@ def ssim(reference, prediction) -> float:
         full=True
     )
     return val
+
 
 def psnr(reference, prediction) -> float:
     """Implements PSNR from skimage.metrics"""
