@@ -3,25 +3,7 @@ import pandas as pd
 from accuracy import accuracy
 import constants as c
 import helpers
-from recognition import Recognition
-
-
-# plate recognition
-def recognition_main(plate_df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Uses OCR to recognize the high resolution and low resolution plates.
-
-    :param plate_df: The dataframe containing the plate labels.
-    """
-    # TODO: Move this somewhere else
-    # collect the OCR predictions
-    recog = Recognition(plate_df)
-    recog.benchmark_recognition()
-    recog.low_resolution_recognition()
-    recog.high_resolution_recognition()
-
-    logger.info('Plate predictions finished')
-    return recog.df
+import recognition as recog
 
 
 # accuracy
@@ -101,7 +83,7 @@ def main():
         result_path = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
 
         df = pd.read_csv(result_path)
-        df = recognition_main(df)
+        df = recog.recognition(df)
         df.to_csv(result_path)
     if CHECK_ACCURACY:
         accuracy_main()
