@@ -6,7 +6,6 @@ from tqdm import tqdm
 
 import helpers
 from gan.loss import GeneratorLoss
-from gan.metrics import TrainMetrics
 
 logger = logging.getLogger(__name__)
 
@@ -23,30 +22,32 @@ class Training:
         self.param_dir = param_dir
         self.epoch_count = epoch_count
 
-    def main_loop(self):
+    def training(self) -> tuple[list[float], list[float]]:
         # optimizers
         gen_optimizer = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
         disc_optimizer = torch.optim.Adam(self.disc_net.parameters(), lr=0.002)
 
-        data_collect = TrainMetrics()
+        gen_loss = []
+        disc_loss = []
         for epoch in range(1, 1 + self.epoch_count):
             d_loss, g_loss = self.train_epoch(epoch, gen_optimizer, disc_optimizer)
 
-            data_collect.gen_loss.append(g_loss)
-            data_collect.disc_loss.append(d_loss)
+            gen_loss.append(g_loss)
+            disc_loss.append(d_loss)
 
         # save params
         helpers.create_pth(self.param_dir)
         torch.save(self.gen_net.state_dict(), f'{self.param_dir}/gen_params.pth')
         torch.save(self.disc_net.state_dict(), f'{self.param_dir}/disc_params.pth')
 
-        return data_collect.disc_loss, data_collect.gen_loss
+        return disc_loss, gen_loss
 
     def train_epoch(self, epoch, gen_optim, disc_optim):
         self.gen_net.train()
         self.disc_net.train()
 
-        metric_collect = TrainMetrics()
+        gen_loss = []
+        disc_loss = []
 
         train_bar = tqdm(self.dataset)
         for gen_input, real_img in train_bar:
@@ -72,15 +73,15 @@ class Training:
                 )
             )
 
-            metric_collect.disc_loss.append(d_loss)
-            metric_collect.gen_loss.append(g_loss)
+            disc_loss.append(d_loss)
+            gen_loss.append(g_loss)
 
-        metric_collect.gen_loss = stats.mean(metric_collect.gen_loss)
-        metric_collect.disc_loss = stats.mean(metric_collect.disc_loss)
-        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {metric_collect.gen_loss}')
-        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {metric_collect.disc_loss}')
+        gen_loss = stats.mean(gen_loss)
+        disc_loss = stats.mean(disc_loss)
+        logger.info(f'[{epoch}/{self.epoch_count}] Gen Loss: {gen_loss}')
+        logger.info(f'[{epoch}/{self.epoch_count}] Disc Loss: {disc_loss}')
 
-        return metric_collect.disc_loss, metric_collect.gen_loss
+        return disc_loss, gen_loss
 
     def update_nets(self, real_img, fake_img):
         """Update generator and discriminator networks"""

@@ -70,7 +70,7 @@ class MultiSizeRunner:
                 gan.Discriminator(),
                 f'{self.param_path}/{lr_size}to{hr_size}',
                 epoch_count=num_epochs
-            ).main_loop()
+            ).training()
 
         # save to dataframe and csv
         df = pd.DataFrame(loss_dict)
