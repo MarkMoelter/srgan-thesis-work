@@ -4,7 +4,7 @@ import pandas as pd
 
 import constants as c
 import helpers
-from .plate_reader_refactor import PlateReader
+from .plate_reader import PlateReader
 
 
 class Recognition:
