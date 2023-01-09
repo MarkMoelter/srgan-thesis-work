@@ -4,7 +4,7 @@ import pandas as pd
 
 import constants as c
 import helpers
-from .plate_reader import plate_reader
+from .plate_reader_refactor import PlateReader
 
 
 class Recognition:
@@ -13,9 +13,9 @@ class Recognition:
 
     def benchmark_recognition(self) -> None:
         """OCR recognition for the benchmark images."""
-        for img_size in [64, 128, 256, 512]:
-            img_path = f'{c.BENCHMARK_PATH}/{img_size}'
-            self.df[f'{img_size}_Benchmark'] = plate_reader(img_path, im_show=False)
+        for hr in [64, 128, 256, 512]:
+            path = f'{c.BENCHMARK_PATH}/{hr}'
+            self.df[f'{hr}_Benchmark'] = PlateReader(path).predictions()
 
         logging.info(f'Benchmark predictions finished')
 
@@ -23,7 +23,7 @@ class Recognition:
         """OCR recognition for the low resolution images."""
         for lr in c.LR_TO_TEST:
             path = f'{c.LOW_RES_PATH}/{lr}'
-            lr_predictions = plate_reader(path, im_show=False)
+            lr_predictions = PlateReader(path).predictions()
             self.df[f'LR:{lr}'] = lr_predictions
 
         logging.info(f'LR predictions finished')
@@ -31,7 +31,7 @@ class Recognition:
     def high_resolution_recognition(self) -> None:
         for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
             path = f'{c.SUPER_RES_PATH}/{lr}-{sr}'
-            sr_predictions = plate_reader(path, im_show=False)
+            sr_predictions = PlateReader(path).predictions()
             self.df[f'SR:{lr}-{sr}'] = sr_predictions
 
         logging.info(f'SR predictions finished')
