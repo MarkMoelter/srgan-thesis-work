@@ -1,6 +1,6 @@
 import pandas as pd
 
-import accuracy
+from accuracy import accuracy
 import constants as c
 import helpers
 from recognition import Recognition
@@ -33,15 +33,16 @@ def accuracy_main():
     ]
 
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
-    predicted_plates = pd.read_csv(plt_csv)  # read csv
 
-    acc = accuracy.Accuracy(predicted_plates, 'Real Plates')
+    plate_df = pd.read_csv(plt_csv)
+    labels = [plate_df['Real Plates'].tolist()]
 
     # benchmark accuracy
     for num in c.HR_TO_TEST:
+        predictions = plate_df[f'{num}_Benchmark'].tolist()
         logger.info(
             f"{num}_Benchmark Accuracy: "
-            f"{acc.accuracy([predicted_plates[f'{num}_Benchmark'].tolist()])}"
+            f"{accuracy(plate_df, labels ,predictions)}"
         )
 
     # lr accuracy
@@ -51,19 +52,17 @@ def accuracy_main():
     ]  # list of column names
     # nested lists of predicted plates
     lr_acc_test_plts = [
-        predicted_plates[f'{val}'].tolist()
+        plate_df[f'{val}'].tolist()
         for val in lr_col_list
     ]
 
-    lr_size = acc.accuracy(lr_acc_test_plts)
-    logger.info(f'LR Acc: {lr_size}')  # log
+    lr_size = accuracy(plate_df, labels, lr_acc_test_plts)
+    logger.info(f'LR Acc: {lr_size}')
 
     # sr accuracy
-    sr_col_list = [f'SR:{val}' for val in lr_sr_size_list]  # list of column names
-    # nested lists of predicted plates
-    sr_acc_test_plts = [predicted_plates[f'{val}'].tolist() for val in sr_col_list]
-
-    sr_size = acc.accuracy(sr_acc_test_plts)
+    sr_col_list = [f'SR:{val}' for val in lr_sr_size_list]
+    sr_acc_test_plts = [plate_df[f'{val}'].tolist() for val in sr_col_list]
+    sr_size = accuracy(plate_df, labels, sr_acc_test_plts)
     logger.info(f'SR Acc: {sr_size}')  # log
 
     # convert to dataframe and save as csv
