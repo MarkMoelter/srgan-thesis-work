@@ -49,12 +49,14 @@ class Accuracy:
         """
 
         # check if not list
-        if (type(self.label_col_val) or type(pred_list)) is not list:
+        both_lists = isinstance(self.label_col_val, list) and isinstance(pred_list, list)
+        if not both_lists:
             logger.error('Only lists are allowed')
             raise TypeError('Only lists are allowed')
 
         # if lengths are equal
-        elif len(self.label_col_val) != len(pred_list):
+        len_is_equal = len(self.label_col_val) == len(pred_list)
+        if not len_is_equal:
             logger.error('Lists are not the same length')
             raise ValueError('Lists are not the same length')
 
