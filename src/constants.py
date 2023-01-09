@@ -4,7 +4,7 @@ SCALE_FACTOR = [2, 4, 8]
 
 # Dataset generation
 SETS = 6
-IMG_DIR = 'data_gen/master_dataset'
+MASTER_DATASET_DIR = 'data_gen/master_dataset'
 LABEL_PATH = 'data_gen/image_labels.csv'
 
 # image paths
