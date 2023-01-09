@@ -1,8 +1,4 @@
-import logging
-
 import pandas as pd
-
-from .recognition import Recognition
 
 
 def recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
@@ -11,6 +7,9 @@ def recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
 
     :param plate_df: The dataframe containing the plate labels.
     """
+    import logging
+    from .recognition import Recognition
+
     # collect the OCR predictions
     recog = Recognition(plate_df)
     recog.benchmark_recognition()
