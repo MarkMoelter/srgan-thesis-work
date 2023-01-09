@@ -1,9 +1,11 @@
 import pandas as pd
 
-from accuracy import accuracy
 import constants as c
 import helpers
 import recognition as recog
+from accuracy import accuracy
+from data_gen import generate_dataset
+from gan import MultiSizeRunner
 
 
 # accuracy
@@ -24,7 +26,7 @@ def accuracy_main():
         predictions = plate_df[f'{num}_Benchmark'].tolist()
         logger.info(
             f"{num}_Benchmark Accuracy: "
-            f"{accuracy(plate_df, labels ,predictions)}"
+            f"{accuracy(plate_df, labels, predictions)}"
         )
 
     # lr accuracy
@@ -55,9 +57,6 @@ def accuracy_main():
 
 
 def main():
-    from data_gen import generate_dataset
-    from gan import MultiSizeRunner
-
     logger.info('Starting main program')
 
     GENERATE_DATA = False

@@ -11,7 +11,7 @@ class Template(ABC):
     x_pos: list
     y_pos: int
 
-    available_chars: np.array
+    available_chars: np.ndarray
 
     font_size: int
     font_path: str
