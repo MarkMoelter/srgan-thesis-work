@@ -35,4 +35,3 @@ class Recognition:
             self.df[f'SR:{lr}-{sr}'] = sr_predictions
 
         logging.info(f'SR predictions finished')
-       
