@@ -15,13 +15,14 @@ logger = logging.getLogger(__name__)
 
 
 # TODO: Get rid of plate_reader from main.py
+# TODO: Refactor next
 class PlateReader:
     def __init__(
             self,
             image_dir: str,
             label_csv_path: str = None,
             prediction_csv_path: str = None,
-            image_show=False
+            image_show: bool = False
     ):
         self.image_dir = image_dir
         self.label_csv_path = label_csv_path

@@ -12,6 +12,7 @@ import constants as c
 logger = logging.getLogger(__name__)
 
 
+# TODO: Refactor next
 def plate_reader(
         image_dir: str,
         csv_in_path: str = None,
