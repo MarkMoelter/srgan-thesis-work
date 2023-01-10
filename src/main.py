@@ -19,6 +19,8 @@ def format_sizes() -> list[str]:
 # accuracy
 def accuracy_main():
     # TODO: Refactor this
+
+    # todo: move this to parameter, think about taking in the df instead of the path
     plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
 
     plate_df = pd.read_csv(plt_csv)
