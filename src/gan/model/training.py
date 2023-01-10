@@ -10,7 +10,6 @@ from gan.loss import GeneratorLoss
 logger = logging.getLogger(__name__)
 
 
-# todo: refactor into useful methods instead of breaking up a large function into different parts of a huge class.
 class Training:
     """Implement each step in the model training phase"""
 
@@ -95,15 +94,6 @@ class Training:
         self.disc_net.zero_grad()
         return self.disc_net(img).mean()
 
-    @staticmethod
-    def _update_discriminator(out_label, target_label):
-        """Update the discriminator after calculating the loss."""
-        # compute loss
-        d_loss = 1 - target_label + out_label
-        # backprop
-        d_loss.backward(retain_graph=True)
-        return d_loss.item()
-
     def _update_generator(self, out_label, out_img, target_img):
         """Update the generator after calculating the loss."""
         self.gen_net.zero_grad()
@@ -114,3 +104,12 @@ class Training:
         g_loss.backward()
 
         return g_loss.item()
+
+    @staticmethod
+    def _update_discriminator(out_label, target_label):
+        """Update the discriminator after calculating the loss."""
+        # compute loss
+        d_loss = 1 - target_label + out_label
+        # backprop
+        d_loss.backward(retain_graph=True)
+        return d_loss.item()
