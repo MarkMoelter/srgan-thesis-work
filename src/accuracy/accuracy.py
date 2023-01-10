@@ -70,66 +70,46 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     return statistics.mean(acc_list)
 
 
-def dataframe_accuracy(
-        dataframe: pd.DataFrame,
-        labels: list[str],
-        prediction_headers: list[str]
-) -> list[float]:
+def accuracy(
+        plate_dataframe: pd.DataFrame,
+        headers: list[str],
+        label_header: str = 'Real Plates'
+) -> dict[str, float]:
     """
-    Collect the list of all accuracies of each of the column names.
+    Calculate the accuracy of OCR predictions given the dataframe of
+     labels and predictions, and the column headers to be calculated.
 
-    :param dataframe: The dataframe with the plate labels and predictions.
-    :param labels: The list of label values for each plate.
-    :param prediction_headers: List of column names for different predictions
-     to compare with the labels.
-    :return: List of the specified column's accuracy.
+    :param plate_dataframe: The dataframe with the plate labels and predictions.
+    :param headers: List of column headers to process.
+    :param label_header: The column header for the plate labels.
+    :return: A dictionary containing the accuracy values.
     """
 
-    return [
-        column_accuracy(labels, predictions=dataframe[col_name].tolist())
-        for col_name in prediction_headers
-    ]
+    # collect the plate labels
+    labels = plate_dataframe[label_header].tolist()
 
+    # iterate over each column
+    accuracy_dict = {}
+    for header in headers:
+        # collect the plate predictions
+        predictions: list[str] = plate_dataframe[header].tolist()
+        accuracy_value: float = column_accuracy(labels, predictions)
 
-def accuracy(plate_label_df: pd.DataFrame, combinations: list[str]) -> pd.DataFrame:
-    """Calculate the accuracy of the various LR-HR sizes.
-    Tests the benchmark, then LR accuracy, then SR accuracy
+        # append results to dictionary
+        accuracy_dict[header] = accuracy_value
+        logger.debug(f'{header} Accuracy: {accuracy_value}')
 
-    :param plate_label_df: The dataframe with the plate labels
-    :param combinations: The list of combinations in the same format as the dataframe column headers.
-    """
-    labels = plate_label_df['Real Plates'].tolist()
+    return accuracy_dict
+
+    # todo: remove below this after collecting the logic for each image type: LR, SR, Benchmark
+    # todo: move to function that calls this one
+    # todo: move label_header default to outside function. Do not have a default value
 
     # benchmark accuracy
-    for num in c.HR_TO_TEST:
-        predictions = plate_label_df[f'{num}_Benchmark'].tolist()
-        logger.info(
-            f"{num}_Benchmark Accuracy: "
-            f"{dataframe_accuracy(plate_label_df, labels, predictions)}"
-        )
+    bm_headers =[f'{val}_Benchmark' for val in c.HR_TO_TEST]
 
     # lr accuracy
-    lr_col_list = [
-        f'LR:{val}'
-        for val in c.LR_TO_TEST
-    ]  # list of column names
-    # nested lists of predicted plates
-    lr_acc_test_plts = [
-        plate_label_df[f'{val}'].tolist()
-        for val in lr_col_list
-    ]
-
-    lr_size = dataframe_accuracy(plate_label_df, labels, lr_acc_test_plts)
-    logger.info(f'LR Acc: {lr_size}')
+    lr_headers = [f'LR:{val}' for val in c.LR_TO_TEST]
 
     # sr accuracy
-    sr_col_list = [f'SR:{val}' for val in combinations]
-    sr_acc_test_plts = [plate_label_df[f'{val}'].tolist() for val in sr_col_list]
-    sr_size = dataframe_accuracy(plate_label_df, labels, sr_acc_test_plts)
-    logger.info(f'SR Acc: {sr_size}')  # log
-
-    # convert to dataframe and save as csv
-    acc_df = pd.DataFrame(data=[lr_size, sr_size], index=['LR', 'SR'], columns=combinations)
-    logger.info(acc_df.head())
-
-    return acc_df
+    sr_headers = [f'SR:{val}' for val in headers]
