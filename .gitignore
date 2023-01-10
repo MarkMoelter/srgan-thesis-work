@@ -3,3 +3,5 @@ logs
 Results
 *.png
 *.xml
+*.iml
+*.idea
