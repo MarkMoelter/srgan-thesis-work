@@ -33,7 +33,7 @@ def multi_input_gan():
     logger.info('Starting main()')
 
     # generate tuples of combinations and scale factors desired
-    combo_tuples = combinations(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
+    combo_tuples = combinations(c.LR_LIST, c.HR_LIST, c.SCALE_TUPLE)
 
     ### Deep Learning Model ###
     # create multi model object

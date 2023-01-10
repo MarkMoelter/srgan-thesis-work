@@ -3,14 +3,14 @@ import pandas as pd
 import constants as c
 import helpers
 import accuracy
-from gan import MultiSizeRunner
+from gan.multi_runner import MultiSizeRunner
 
 
 def combinations(
-        low_res_list: list[int],
-        high_res_list: list[int],
-        scale_factors: list[int],
-) -> list[tuple[int, int]]:
+        low_res_list,
+        high_res_list,
+        scale_factors
+) -> list[tuple]:
     """
     Generate size combination tuples.
 
@@ -114,12 +114,12 @@ def accuracy_main():
 def main():
     logger.info('Starting main()')
     # generate tuples of combinations and scale factors desired
-    combos_to_test = combinations(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR)
+    combo_tuples = combinations(c.LR_LIST, c.HR_LIST, c.SCALE_TUPLE)
 
     ### Deep Learning Model ###
     # create multi model object
     multi = MultiSizeRunner(
-        combos_to_test,
+        combo_tuples,
         c.PARAM_PATH,
         c.GEN_PARAM_FILENAME,
         c.DISC_PARAM_FILENAME,
