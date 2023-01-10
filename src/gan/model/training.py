@@ -94,7 +94,7 @@ class Training:
         self.disc_net.zero_grad()
         return self.disc_net(img).mean()
 
-    def _update_generator(self, out_label, out_img, target_img):
+    def _update_generator(self, out_label, out_img, target_img) -> float:
         """Update the generator after calculating the loss."""
         self.gen_net.zero_grad()
         # compute loss
@@ -106,7 +106,7 @@ class Training:
         return g_loss.item()
 
     @staticmethod
-    def _update_discriminator(out_label, target_label):
+    def _update_discriminator(out_label, target_label) -> float:
         """Update the discriminator after calculating the loss."""
         # compute loss
         d_loss = 1 - target_label + out_label
