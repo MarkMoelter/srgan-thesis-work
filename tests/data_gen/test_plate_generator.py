@@ -31,14 +31,14 @@ class TestPlateGeneratorMethods(unittest.TestCase):
     def test_single_plate(self):
         # Invalid Character
         with self.assertRaises(ValueError):
-            PlateGenerator(RectangularPlate).single_plate(
+            PlateGenerator(RectangularPlate).generate_plate(
                 'c',  # invalid
                 RectangularPlate.x_pos[0]
             )
 
         # Invalid Position
         with self.assertRaises(ValueError):
-            PlateGenerator(RectangularPlate).single_plate(
+            PlateGenerator(RectangularPlate).generate_plate(
                 'A',
                 6  # invalid
             )

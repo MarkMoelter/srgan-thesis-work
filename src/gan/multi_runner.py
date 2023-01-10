@@ -65,12 +65,10 @@ class MultiSizeRunner:
                 shuffle=True
             )
             loss_dict[f'{lr_size}-{hr_size}'] = gan.Training(
-                loaded_data,
                 gan.Generator(hr_size // lr_size),
                 gan.Discriminator(),
-                f'{self.param_path}/{lr_size}to{hr_size}',
-                epoch_count=num_epochs
-            ).main_loop()
+                f'{self.param_path}/{lr_size}to{hr_size}'
+            ).train_model(loaded_data, num_epochs)
 
         # save to dataframe and csv
         df = pd.DataFrame(loss_dict)

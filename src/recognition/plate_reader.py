@@ -1,12 +1,13 @@
 import logging
 import os
-from tqdm import tqdm
-import cv2
-from PIL import Image
 
+import cv2
+import numpy as np
 import pandas as pd
 import pytesseract as tess
 import torchvision.transforms as transforms
+from PIL import Image
+from tqdm import tqdm
 
 import constants as c
 from plate import Plate
@@ -14,22 +15,12 @@ from plate import Plate
 logger = logging.getLogger(__name__)
 
 
-# TODO: Get rid of plate_reader from main.py
 class PlateReader:
-    def __init__(
-            self,
-            image_dir: str,
-            label_csv_path: str = None,
-            prediction_csv_path: str = None,
-            image_show=False
-    ):
+    def __init__(self, image_dir: str, prediction_csv_path: str = None):
         self.image_dir = image_dir
-        self.label_csv_path = label_csv_path
         self.prediction_csv_path = prediction_csv_path
-        self.image_show = image_show
-        self.plate_obj_list = []
 
-    def reader_loop(self):
+    def predictions(self, image_show: bool = False):
         """
         Read the characters from the plates and store them in a Dataframe.
         """
@@ -37,20 +28,21 @@ class PlateReader:
         tess.pytesseract.tesseract_cmd = c.PYTESSERACT_ENV_VAR_PATH
 
         bar = tqdm(os.listdir(self.image_dir), desc='Predicting plates')
-
+        plates = []
         # loop through all files in a dir
         for filename in bar:
+            path = os.path.join(self.image_dir, filename)
 
             # skip iteration if file does not exist
-            if not os.path.isfile(os.path.join(self.image_dir, filename)):
+            if not os.path.isfile(path):
                 continue
 
             bar.set_description(f'Predicting plate: {filename}')
 
-            plate_path = f'{self.image_dir}/{filename}'
-            transformed_plate = self._transform(plate_path)
+            plate_img = cv2.imread(path)
+            transformed_plate: Image = self._transform_image(plate_img)
 
-            if self.image_show:
+            if image_show:
                 transformed_plate.show()
 
             # generate the prediction
@@ -65,13 +57,13 @@ class PlateReader:
             filter_prediction = self._filter_string(prediction, blacklist_chars)
 
             # add to the plate list
-            self.plate_obj_list.append(Plate(filename, filename, filter_prediction))
+            plates.append(Plate(filename, filename, filter_prediction))
 
         # save a csv
         if self.prediction_csv_path is not None:
-            self._save_csv()
+            self._save_csv(plates)
 
-        return [plate.prediction for plate in self.plate_obj_list]
+        return [plate.prediction for plate in plates]
 
     @staticmethod
     def _filter_string(prediction: str, blacklist: list[str]):
@@ -89,17 +81,14 @@ class PlateReader:
         return prediction
 
     @staticmethod
-    def _transform(img_path: str) -> Image:
+    def _transform_image(img: np.ndarray) -> Image:
         """
-        Convert an image to grayscale, center crop and resize it.
+        Convert a cv2 image to grayscale, center crop, resize it,
+        and return it as a PIL Image.
 
-        :param img_path: path to image to transform
-        :return: Transformed image as a PIL Image
+        :param img: cv2 image to be transformed.
+        :return: Transformed image as a PIL Image.
         """
-
-        # open image as cv2 image
-        img = cv2.imread(img_path)
-
         # grayscale
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -126,8 +115,12 @@ class PlateReader:
             )
         ])(img)
 
-    def _save_csv(self):
-        """Save plates to csv."""
+    def _save_csv(self, plates: list[Plate]) -> None:
+        """
+        Save plates to csv.
+
+        :param plates: List of plate objects.
+        """
         pd.DataFrame(
-            data=[plate.prediction for plate in self.plate_obj_list]
+            data=[plate.prediction for plate in plates]
         ).to_csv(self.prediction_csv_path, index=False)

@@ -3,12 +3,11 @@ import os
 import pandas as pd
 from tqdm import tqdm
 
-from plate_generator import PlateGenerator
-from data_gen.plate_templates.rectangular_plate import RectangularPlate
+from .plate_generator import PlateGenerator
+from .plate_templates import RectangularPlate
 
 
-def dataset_generate():
-    SETS = 6
+def generate_dataset(sets: int, image_directory: str, label_path: str) -> None:
     IMG_DIR = 'data_gen/master_dataset'
     CSV_PATH = 'data_gen/image_labels.csv'
 
@@ -16,7 +15,7 @@ def dataset_generate():
     # master_csv = f'Results/CSVs/Master_Dataset.csv'
 
     gen = PlateGenerator(RectangularPlate)
-    plates = gen.multi_plates(SETS)
+    plates = gen.generate_plate_sets(sets)
 
     plate_list = [
         [plate.filename, plate.label]
@@ -35,4 +34,4 @@ def dataset_generate():
 if __name__ == '__main__':
     os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
 
-    dataset_generate()
+    generate_dataset()

@@ -6,8 +6,8 @@ import torchvision.utils as utils
 from tqdm import tqdm
 
 import helpers
-from gan.metrics import CalculateMetrics
-from gan.model import Generator
+from gan.metrics import psnr, ssim
+from .generator import Generator
 
 logger = logging.getLogger(__name__)
 
@@ -64,25 +64,21 @@ class Validation:
                 interpolated = interpolated.to(self.device)
                 reference = reference.to(self.device)
 
-                # metrics
-                super_res_metrics = CalculateMetrics(reference, super_res)
-                interpolated_metrics = CalculateMetrics(reference, interpolated)
+                self.sr_psnr.append(psnr(reference, super_res))
+                self.sr_ssim.append(ssim(reference, super_res))
 
-                self.sr_psnr.append(super_res_metrics.psnr())
-                self.sr_ssim.append(super_res_metrics.ssim())
-
-                self.inter_psnr.append(interpolated_metrics.psnr())
-                self.inter_ssim.append(interpolated_metrics.ssim())
+                self.inter_psnr.append(psnr(reference, super_res))
+                self.inter_ssim.append(ssim(reference, super_res))
 
                 val_bar.set_description(
                     desc=(
                         f"[Converting LR images to SR images] "
 
-                        f"Super PSNR: {super_res_metrics.psnr():.4f} dB "
-                        f"Super SSIM: {super_res_metrics.ssim():.4f} "
+                        f"Super PSNR: {psnr(reference, super_res):.4f} dB "
+                        f"Super SSIM: {ssim(reference, super_res):.4f} "
 
-                        f"Inter PSNR: {interpolated_metrics.psnr():.4f} dB "
-                        f"Inter SSIM: {interpolated_metrics.ssim():.4f}"
+                        f"Inter PSNR: {psnr(reference, super_res):.4f} dB "
+                        f"Inter SSIM: {ssim(reference, super_res):.4f}"
                     )
                 )
 
