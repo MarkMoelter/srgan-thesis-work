@@ -16,18 +16,17 @@ class Training:
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    def __init__(self, gen_net, disc_net, param_dir, total_epochs):
+    def __init__(self, gen_net, disc_net, param_dir):
         self.gen_net = gen_net.to(self.device)
         self.disc_net = disc_net.to(self.device)
 
         self.param_dir = param_dir
-        self.total_epochs = total_epochs
 
-    def train_model(self, dataset) -> tuple[list[float], list[float]]:
+    def train_model(self, dataset, total_epochs) -> tuple[list[float], list[float]]:
         # optimizers
         gen_loss_each_epoch = []
         disc_loss_each_epoch = []
-        for epoch in range(1, 1 + self.total_epochs):
+        for epoch in range(1, 1 + total_epochs):
             self.gen_net.train()
             self.disc_net.train()
 
@@ -37,14 +36,14 @@ class Training:
             # set bar description
             train_bar.set_description(
                 desc=(
-                    f"[{epoch}/{self.total_epochs}] "
+                    f"[{epoch}/{total_epochs}] "
                     f"Loss_D: {avg_gen_loss:.4f} "
                     f"Loss_G: {avg_disc_loss:.4f} "
                 )
             )
 
-            logger.info(f'[{epoch}/{self.total_epochs}] Gen Loss: {avg_gen_loss}')
-            logger.info(f'[{epoch}/{self.total_epochs}] Disc Loss: {avg_disc_loss}')
+            logger.info(f'[{epoch}/{total_epochs}] Gen Loss: {avg_gen_loss}')
+            logger.info(f'[{epoch}/{total_epochs}] Disc Loss: {avg_disc_loss}')
             gen_loss_each_epoch.append(avg_gen_loss)
             disc_loss_each_epoch.append(avg_disc_loss)
 
