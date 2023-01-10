@@ -112,3 +112,10 @@ def combo_tuples(
         for hr in high_res_list
         if (hr // lr) in scale_factors
     ]
+
+def format_sizes() -> list[str]:
+    """Format the combinations from combo_tuples function. Specifically for the accuracy dataframes."""
+    return [
+        f'{lr}-{sr}'
+        for lr, sr in combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST)
+    ]
