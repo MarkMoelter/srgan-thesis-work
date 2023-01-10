@@ -19,8 +19,6 @@ class Training:
     def __init__(self, gen_net, disc_net, param_dir, total_epochs):
         self.gen_net = gen_net.to(self.device)
         self.disc_net = disc_net.to(self.device)
-        self.gen_optimizer = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
-        self.disc_optimizer = torch.optim.Adam(self.disc_net.parameters(), lr=0.002)
 
         self.param_dir = param_dir
         self.total_epochs = total_epochs
@@ -65,9 +63,11 @@ class Training:
         :param dataset: The dataset to process.
         :return: The average value for the discriminator and generator loss in that order.
         """
+        gen_optim = torch.optim.Adam(self.gen_net.parameters(), lr=0.002)
+        disc_optim = torch.optim.Adam(self.disc_net.parameters(), lr=0.002)
+
         gen_loss_values = []
         disc_loss_values = []
-
         for gen_input, target_img in dataset:
             # put image tensors on the device
             out_img = self.gen_net(
@@ -83,8 +83,8 @@ class Training:
             gen_loss = self._update_generator(out_label, out_img, target_img)
 
             # update optimizers
-            self.gen_optimizer.step()
-            self.disc_optimizer.step()
+            gen_optim.step()
+            disc_optim.step()
 
             disc_loss_values.append(disc_loss)
             gen_loss_values.append(gen_loss)
