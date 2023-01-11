@@ -98,16 +98,3 @@ def accuracy(
         logger.debug(f'{header} Accuracy: {accuracy_value}')
 
     return accuracy_dict
-
-    # todo: remove below this after collecting the logic for each image type: LR, SR, Benchmark
-    # todo: move to function that calls this one
-    # todo: move label_header default to outside function. Do not have a default value
-
-    # benchmark accuracy
-    bm_headers =[f'{val}_Benchmark' for val in c.HR_TO_TEST]
-
-    # lr accuracy
-    lr_headers = [f'LR:{val}' for val in c.LR_TO_TEST]
-
-    # sr accuracy
-    sr_headers = [f'SR:{val}' for val in headers]
