@@ -3,7 +3,7 @@ import os
 
 import winsound
 
-import header_format as hf
+import headers
 
 
 def create_pth(path: str) -> str:
@@ -118,12 +118,12 @@ def combos(
 
 
 def benchmark_headers(hr_values: list[int]) -> list[str]:
-    return [hf.benchmark(val) for val in hr_values]
+    return [headers.benchmark(val) for val in hr_values]
 
 
 def lr_headers(lr_values: list[int]) -> list[str]:
-    return [hf.low_res(val) for val in lr_values]
+    return [headers.low_res(val) for val in lr_values]
 
 
 def sr_headers(lr_values: list[int], sr_values: list[int]) -> list[str]:
-    return [hf.super_res(lr, sr) for lr, sr in combos(lr_values, sr_values)]
+    return [headers.super_res(lr, sr) for lr, sr in combos(lr_values, sr_values)]
