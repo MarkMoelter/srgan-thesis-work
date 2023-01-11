@@ -9,7 +9,7 @@ import constants as c
 logger = logging.getLogger(__name__)
 
 
-def prediction_accuracy(label: str, prediction: str) -> float:
+def calculate_prediction_accuracy(label: str, prediction: str) -> float:
     """
     Compute the accuracy between a label and a prediction.
 
@@ -20,9 +20,7 @@ def prediction_accuracy(label: str, prediction: str) -> float:
 
     # check if not string
     if not isinstance(prediction, str):
-        error_mes = f'{prediction} is not a string'
-        logger.error(error_mes)
-        raise ValueError(error_mes)
+        raise ValueError(f'{prediction} is not a string')
 
     # check if identical
     if label == prediction:
@@ -30,11 +28,11 @@ def prediction_accuracy(label: str, prediction: str) -> float:
 
     # element to element comparison
     num_matches = 0
-    for c1, c2 in zip_longest(label, prediction):
+    for label_char, prediction_char in zip_longest(label, prediction):
+        if label_char != prediction_char:
+            continue
 
-        # add one if identical
-        if c1 == c2:
-            num_matches += 1
+        num_matches += 1
 
     return num_matches / len(label)
 
@@ -62,7 +60,7 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
 
         # accuracy between strings as lists
     acc_list = [
-        prediction_accuracy(label, predict)
+        calculate_prediction_accuracy(label, predict)
         for label, predict in zip(labels, predictions)
     ]
 
