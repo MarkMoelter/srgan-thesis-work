@@ -113,9 +113,17 @@ def combos(
         if (hr // lr) in scale_factors
     ]
 
-def format_sizes() -> list[str]:
-    """Format the combinations from combo_tuples function. Specifically for the accuracy dataframes."""
-    return [
-        f'{lr}-{sr}'
-        for lr, sr in combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST)
-    ]
+
+def benchmark_header_format(value) -> str:
+    """Format for the benchmark headers"""
+    return f'BM: {value}'
+
+
+def lr_header_format(value) -> str:
+    """Format for low_resolution headers"""
+    return f'LR: {value}'
+
+
+def hr_headers(value) -> str:
+    """Format for high_resolution headers"""
+    return f'HR: {value}'
