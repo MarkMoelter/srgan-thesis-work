@@ -4,8 +4,6 @@ from itertools import zip_longest
 
 import pandas as pd
 
-import constants as c
-
 logger = logging.getLogger(__name__)
 
 
