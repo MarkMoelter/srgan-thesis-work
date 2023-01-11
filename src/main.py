@@ -37,13 +37,9 @@ def main():
     if CHECK_ACCURACY:
         df = pd.read_csv(c.PLATE_CSV)
 
-        benchmark_headers = [f'{val}_Benchmark' for val in c.HR_TO_TEST]
-        lr_headers = [f'LR:{val}' for val in c.LR_TO_TEST]
-        sr_headers = [f'{lr}-{sr}' for lr, sr in helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST)]
-
-        benchmark_accuracy = accuracy(df, benchmark_headers)
-        lr_accuracy = accuracy(df, lr_headers)
-        sr_accuracy = accuracy(df, sr_headers)
+        benchmark_accuracy = accuracy(df, helpers.benchmark_headers(c.HR_TO_TEST))
+        lr_accuracy = accuracy(df, helpers.lr_headers(c.LR_TO_TEST))
+        sr_accuracy = accuracy(df, helpers.sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
 
     helpers.tone()
     logger.info('Finished main program')
