@@ -1,4 +1,9 @@
 import logging
+import os
+
+import winsound
+
+import headers
 
 
 def create_pth(path: str) -> str:
@@ -8,7 +13,6 @@ def create_pth(path: str) -> str:
     :param path: Path to create.
     :return: The same path.
     """
-    import os
     if not os.path.exists(path):
         os.makedirs(path)
     return path
@@ -64,7 +68,6 @@ def tone(duration=3, note='a'):
     :param note: chose the lowercase letter that corresponds to a musical note a-g.
     :return: None
     """
-    import winsound
     musical_dict = {'a': 440, 'b': 494, 'c': 523, 'd': 587, 'e': 659, 'f': 698, 'g': 784}
     duration_ms = duration * 1000  # convert seconds to milliseconds
 
@@ -96,7 +99,7 @@ def img_save(
         utils.save_image(image, img_out)
 
 
-def combo_tuples(
+def combos(
         low_res_list: list[int],
         high_res_list: list[int],
         scale_factors: list[int] = (2, 4, 8)
@@ -112,3 +115,15 @@ def combo_tuples(
         for hr in high_res_list
         if (hr // lr) in scale_factors
     ]
+
+
+def benchmark_headers(hr_values: list[int]) -> list[str]:
+    return [headers.benchmark(val) for val in hr_values]
+
+
+def lr_headers(lr_values: list[int]) -> list[str]:
+    return [headers.low_res(val) for val in lr_values]
+
+
+def sr_headers(lr_values: list[int], sr_values: list[int]) -> list[str]:
+    return [headers.super_res(lr, sr) for lr, sr in combos(lr_values, sr_values)]

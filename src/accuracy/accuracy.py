@@ -7,7 +7,7 @@ import pandas as pd
 logger = logging.getLogger(__name__)
 
 
-def prediction_accuracy(label: str, prediction: str) -> float:
+def calculate_prediction_accuracy(label: str, prediction: str) -> float:
     """
     Compute the accuracy between a label and a prediction.
 
@@ -17,10 +17,8 @@ def prediction_accuracy(label: str, prediction: str) -> float:
     """
 
     # check if not string
-    if type(prediction) is not str:
-        error_mes = f'{prediction} is not a string'
-        logger.error(error_mes)
-        raise ValueError(error_mes)
+    if not isinstance(prediction, str):
+        raise ValueError(f'{prediction} is not a string')
 
     # check if identical
     if label == prediction:
@@ -28,11 +26,11 @@ def prediction_accuracy(label: str, prediction: str) -> float:
 
     # element to element comparison
     num_matches = 0
-    for c1, c2 in zip_longest(label, prediction):
+    for label_char, prediction_char in zip_longest(label, prediction):
+        if label_char != prediction_char:
+            continue
 
-        # add one if identical
-        if c1 == c2:
-            num_matches += 1
+        num_matches += 1
 
     return num_matches / len(label)
 
@@ -46,44 +44,51 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     :return: Average accuracy between the labels and the predictions.
     """
 
-    # check if not list
+    # if either is not list
     both_lists = isinstance(labels, list) and isinstance(predictions, list)
     if not both_lists:
-        logger.error('Only lists are allowed')
         raise TypeError('Only lists are allowed')
 
-    # if lengths are equal
-    len_is_equal = len(labels) == len(predictions)
-    if not len_is_equal:
-        logger.error('Lists are not the same length')
+    # if lengths are not equal
+    if not len(labels) == len(predictions):
         raise ValueError('Lists are not the same length')
 
-        # accuracy between strings as lists
-    acc_list = [
-        prediction_accuracy(label, predict)
-        for label, predict in zip(labels, predictions)
-    ]
+    # accuracy between strings as lists
+    acc_list = []
+    for label, predict in zip(labels, predictions):
+        acc_value = calculate_prediction_accuracy(label, predict)
+        acc_list.append(acc_value)
 
-    # return the mean of all string's accuracy
     return statistics.mean(acc_list)
 
 
 def accuracy(
-        dataframe: pd.DataFrame,
-        labels: list[str],
-        prediction_headers: list[str]
-) -> list[float]:
+        plate_dataframe: pd.DataFrame,
+        headers: list[str],
+        label_header: str = 'Real Plates'
+) -> dict[str, float]:
     """
-    Collect the list of all accuracies of each of the column names.
+    Calculate the accuracy of OCR predictions given the dataframe of
+     labels and predictions, and the column headers to be calculated.
 
-    :param dataframe: The dataframe with the plate labels and predictions.
-    :param labels: The list of label values for each plate.
-    :param prediction_headers: List of column names for different predictions
-     to compare with the labels.
-    :return: List of the specified column's accuracy.
+    :param plate_dataframe: The dataframe with the plate labels and predictions.
+    :param headers: List of column headers to process.
+    :param label_header: The column header for the plate labels.
+    :return: A dictionary containing the accuracy values.
     """
 
-    return [
-        column_accuracy(labels, predictions=dataframe[col_name].tolist())
-        for col_name in prediction_headers
-    ]
+    # collect the plate labels
+    labels = plate_dataframe[label_header].tolist()
+
+    # iterate over each column
+    accuracy_dict = {}
+    for header in headers:
+        # collect the plate predictions
+        predictions: list[str] = plate_dataframe[header].tolist()
+        accuracy_value: float = column_accuracy(labels, predictions)
+
+        # append results to dictionary
+        accuracy_dict[header] = accuracy_value
+        logger.debug(f'{header} Accuracy: {accuracy_value}')
+
+    return accuracy_dict

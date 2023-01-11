@@ -29,7 +29,7 @@ class Recognition:
         logging.info(f'LR predictions finished')
 
     def high_resolution_recognition(self) -> None:
-        for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST):
+        for lr, sr in helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST):
             path = f'{c.SUPER_RES_PATH}/{lr}-{sr}'
             sr_predictions = PlateReader(path).predictions()
             self.df[f'SR:{lr}-{sr}'] = sr_predictions
