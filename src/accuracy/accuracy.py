@@ -46,25 +46,21 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     :return: Average accuracy between the labels and the predictions.
     """
 
-    # check if not list
+    # if either is not list
     both_lists = isinstance(labels, list) and isinstance(predictions, list)
     if not both_lists:
-        logger.error('Only lists are allowed')
         raise TypeError('Only lists are allowed')
 
-    # if lengths are equal
-    len_is_equal = len(labels) == len(predictions)
-    if not len_is_equal:
-        logger.error('Lists are not the same length')
+    # if lengths are not equal
+    if not len(labels) == len(predictions):
         raise ValueError('Lists are not the same length')
 
-        # accuracy between strings as lists
-    acc_list = [
-        calculate_prediction_accuracy(label, predict)
-        for label, predict in zip(labels, predictions)
-    ]
+    # accuracy between strings as lists
+    acc_list = []
+    for label, predict in zip(labels, predictions):
+        acc_value = calculate_prediction_accuracy(label, predict)
+        acc_list.append(acc_value)
 
-    # return the mean of all string's accuracy
     return statistics.mean(acc_list)
 
 
