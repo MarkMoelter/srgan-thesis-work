@@ -18,7 +18,7 @@ def main():
     CHECK_ACCURACY = False
 
     multi = MultiSizeRunner(
-        helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR),
+        helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR),
         c.PARAM_PATH,
         c.GEN_PARAM_FILENAME,
         c.DISC_PARAM_FILENAME,
@@ -31,21 +31,19 @@ def main():
     if VALIDATE_MODEL:
         logger.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
     if RECOGNITION:
-        result_path = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
-
-        df = pd.read_csv(result_path)
+        df = pd.read_csv(c.PLATE_CSV)
         df = recog.recognition(df)
-        df.to_csv(result_path)
+        df.to_csv(c.PLATE_CSV)
     if CHECK_ACCURACY:
-        plt_csv = 'Results/CSVs/recog&acc/copy_Master_Dataset.csv'
-        combos_as_strings = [
-            f'{lr}-{sr}'
-            for lr, sr in helpers.combo_tuples(c.LR_TO_TEST, c.HR_TO_TEST)
-        ]
+        df = pd.read_csv(c.PLATE_CSV)
 
-        df = pd.read_csv(plt_csv)
-        df = accuracy(df, combos_as_strings)
-        df.to_csv(c.ACC_CSV_PATH, index=False)
+        benchmark_headers = [f'{val}_Benchmark' for val in c.HR_TO_TEST]
+        lr_headers = [f'LR:{val}' for val in c.LR_TO_TEST]
+        sr_headers = [f'{lr}-{sr}' for lr, sr in helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST)]
+
+        benchmark_accuracy = accuracy(df, benchmark_headers)
+        lr_accuracy = accuracy(df, lr_headers)
+        sr_accuracy = accuracy(df, sr_headers)
 
     helpers.tone()
     logger.info('Finished main program')
