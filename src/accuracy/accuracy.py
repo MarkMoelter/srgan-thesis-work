@@ -19,7 +19,7 @@ def prediction_accuracy(label: str, prediction: str) -> float:
     """
 
     # check if not string
-    if type(prediction) is not str:
+    if not isinstance(prediction, str):
         error_mes = f'{prediction} is not a string'
         logger.error(error_mes)
         raise ValueError(error_mes)
