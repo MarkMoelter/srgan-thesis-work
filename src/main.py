@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 
 import constants as c
@@ -9,7 +11,7 @@ from gan import MultiSizeRunner
 
 
 def main():
-    logger.info('Starting main program')
+    logging.info('Starting main program')
 
     GENERATE_DATA = False
     TRAIN_MODEL = False
@@ -27,9 +29,9 @@ def main():
     if GENERATE_DATA:
         generate_dataset(c.SETS, c.MASTER_DATASET_DIR, c.LABEL_PATH)
     if TRAIN_MODEL:
-        logger.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
+        logging.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
     if VALIDATE_MODEL:
-        logger.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
+        logging.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
     if RECOGNITION:
         df = pd.read_csv(c.PLATE_CSV)
         df = recog.recognition(df)
@@ -42,9 +44,8 @@ def main():
         sr_accuracy = accuracy(df, h.sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
 
     h.tone()
-    logger.info('Finished main program')
+    logging.info('Finished main program')
 
 
 if '__main__' == __name__:
-    logger = h.log_init()
     main()
