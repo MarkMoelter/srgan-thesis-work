@@ -96,7 +96,7 @@ def img_save(
         utils.save_image(image, img_out)
 
 
-def combo_tuples(
+def combos(
         low_res_list: list[int],
         high_res_list: list[int],
         scale_factors: list[int] = (2, 4, 8)
