@@ -1,7 +1,7 @@
 import pandas as pd
 
 import constants as c
-import helpers
+import helpers as h
 import recognition as recog
 from accuracy import accuracy
 from data_gen import generate_dataset
@@ -18,7 +18,7 @@ def main():
     CHECK_ACCURACY = False
 
     multi = MultiSizeRunner(
-        helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR),
+        h.combos(c.LR_TO_TEST, c.HR_TO_TEST, c.SCALE_FACTOR),
         c.PARAM_PATH,
         c.GEN_PARAM_FILENAME,
         c.DISC_PARAM_FILENAME,
@@ -37,14 +37,14 @@ def main():
     if CHECK_ACCURACY:
         df = pd.read_csv(c.PLATE_CSV)
 
-        benchmark_accuracy = accuracy(df, helpers.benchmark_headers(c.HR_TO_TEST))
-        lr_accuracy = accuracy(df, helpers.lr_headers(c.LR_TO_TEST))
-        sr_accuracy = accuracy(df, helpers.sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
+        benchmark_accuracy = accuracy(df, h.benchmark_headers(c.HR_TO_TEST))
+        lr_accuracy = accuracy(df, h.lr_headers(c.LR_TO_TEST))
+        sr_accuracy = accuracy(df, h.sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
 
-    helpers.tone()
+    h.tone()
     logger.info('Finished main program')
 
 
 if '__main__' == __name__:
-    logger = helpers.log_init()
+    logger = h.log_init()
     main()
