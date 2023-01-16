@@ -23,7 +23,7 @@ class PlateGenerator:
 
         return [
             self.generate_plate(self.generate_label(char, x))
-            for x in self.template.x_pos
+            for x in self.template.label_params.x_pos
             for char in self.template.available_chars
             for _ in tqdm(range(sets))
         ]
@@ -44,13 +44,13 @@ class PlateGenerator:
             )
 
             # draw the label on the transparent layer
-            for pos, val in zip(self.template.x_pos, label.split()):
+            for pos, val in zip(self.template.label_params.x_pos, label.split()):
                 ImageDraw.Draw(text_layer).text(
-                    xy=(pos, self.template.y_pos),
+                    xy=(pos, self.template.label_params.y_pos),
                     text=val,
                     font=ImageFont.truetype(
-                        self.template.font_path,
-                        self.template.font_size
+                        self.template.label_params.font_path,
+                        self.template.label_params.font_size
                     ),
                     fill=(*Color.BLACK, Color.SOLID)
                 )
@@ -73,17 +73,17 @@ class PlateGenerator:
         :return: String label with the given character in the given position.
         """
         # invalid position
-        if x_position not in self.template.x_pos:
+        if x_position not in self.template.label_params.x_pos:
             raise ValueError('Invalid position')
         # invalid character
         if character not in self.template.available_chars:
             raise ValueError('Invalid character')
 
         label = []
-        for x in self.template.x_pos:
+        for x in self.template.label_params.x_pos:
             if x == x_position:
                 label.append(character)
-            elif x_position in self.template.x_pos:
+            elif x_position in self.template.label_params.x_pos:
                 label.append(random.choice(self.template.available_chars))
 
         return ''.join(label)
