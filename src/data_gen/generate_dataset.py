@@ -1,10 +1,9 @@
 import os
-
 import pandas as pd
 from tqdm import tqdm
 
 from .plate_generator import PlateGenerator
-from .plate_templates import RectangularPlate
+from .plate_params import RectangularPlate
 
 
 def generate_dataset(sets: int, image_directory: str, label_path: str) -> None:

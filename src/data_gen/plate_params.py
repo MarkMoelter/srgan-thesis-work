@@ -1,12 +1,24 @@
+from abc import ABC
 from dataclasses import dataclass
 
 import numpy as np
 
-from .template import Template
+
+@dataclass
+class PlateParams(ABC):
+    base_image_path: str
+
+    x_pos: list
+    y_pos: int
+
+    available_chars: np.ndarray
+
+    font_size: int
+    font_path: str
 
 
 @dataclass
-class RectangularPlate(Template):
+class RectangularPlate(PlateParams):
     base_image_path = 'data_gen/resources/plate_template.jpg'
 
     x_pos = [35, 87, 138, 190, 242, 294, 346]

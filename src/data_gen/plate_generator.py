@@ -2,14 +2,15 @@ import random
 
 from PIL import Image, ImageFont, ImageDraw
 from tqdm import tqdm
+from typing import Type
 
 from .color import Color
 from .plate import Plate
-from .plate_templates import Template
+from .plate_params import PlateParams
 
 
 class PlateGenerator:
-    def __init__(self, plate_template: Template):
+    def __init__(self, plate_template: Type[PlateParams]):
         self.template = plate_template
 
     def generate_plate_sets(self, sets: int = 1) -> list[Plate]:
@@ -35,7 +36,6 @@ class PlateGenerator:
         :return: Plate object with the given character in the given position.
         """
         with Image.open(self.template.base_image_path).convert('RGBA') as base:
-
             # create a transparent layer
             text_layer = Image.new(
                 "RGBA",
