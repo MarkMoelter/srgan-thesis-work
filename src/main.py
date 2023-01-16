@@ -43,6 +43,10 @@ def main():
         lr_accuracy = accuracy(df, h.lr_headers(c.LR_TO_TEST))
         sr_accuracy = accuracy(df, h.sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
 
+        logging.info(benchmark_accuracy)
+        logging.info(lr_accuracy)
+        logging.info(sr_accuracy)
+
     h.tone()
     logging.info('Finished main program')
 

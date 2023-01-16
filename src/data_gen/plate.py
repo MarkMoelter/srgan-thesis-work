@@ -1,8 +1,10 @@
+from PIL import Image
+
 import helpers
 
 
 class Plate:
-    def __init__(self, filename, image, label):
+    def __init__(self, filename: str, image: Image, label: str):
         self.filename = filename
         self.image = image
         self.label = label

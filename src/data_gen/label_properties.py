@@ -5,7 +5,7 @@ from .color import Color
 
 
 @dataclass
-class LabelParams(ABC):
+class LabelProperties(ABC):
     x_pos: list[int]
     y_pos: int
 
@@ -15,7 +15,7 @@ class LabelParams(ABC):
 
 
 @dataclass
-class PlateLabelParams(LabelParams):
+class PlateLabel(LabelProperties):
     x_pos = [35, 87, 138, 190, 242, 294, 346]
     y_pos = 53
 

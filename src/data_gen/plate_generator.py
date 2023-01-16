@@ -1,19 +1,25 @@
 import random
+from typing import Type
 
 from PIL import Image, ImageFont, ImageDraw
 from tqdm import tqdm
-from typing import Type
 
 from .color import Color
+from .label_properties import LabelProperties
 from .plate import Plate
-from .plate_params import PlateParams
+from .plate_properties import PlateProperties
 
 
 class PlateGenerator:
-    def __init__(self, plate_template: Type[PlateParams]):
-        self.template = plate_template
+    def __init__(
+        self,
+        plate_properties: Type[PlateProperties],
+        label_properties: Type[LabelProperties]
+    ):
+        self.plate_props = plate_properties
+        self.label_props = label_properties
 
-    def generate_plate_sets(self, sets: int = 1) -> list[Plate]:
+    def generate_sets(self, sets: int = 1) -> list[Plate]:
         """
         Generate a list of plates for the given characters and positions available.
 
@@ -23,8 +29,8 @@ class PlateGenerator:
 
         return [
             self.generate_plate(self.generate_label(char, x))
-            for x in self.template.label_params.x_pos
-            for char in self.template.available_chars
+            for x in self.label_props.x_pos
+            for char in self.plate_props.available_chars
             for _ in tqdm(range(sets))
         ]
 
@@ -35,7 +41,7 @@ class PlateGenerator:
         :param label: The label to generate the plate with
         :return: Plate object with the given character in the given position.
         """
-        with Image.open(self.template.base_image_path).convert('RGBA') as base:
+        with Image.open(self.plate_props.base_image_path).convert('RGBA') as base:
             # create a transparent layer
             text_layer = Image.new(
                 "RGBA",
@@ -44,13 +50,13 @@ class PlateGenerator:
             )
 
             # draw the label on the transparent layer
-            for pos, val in zip(self.template.label_params.x_pos, label.split()):
+            for pos, val in zip(self.label_props.x_pos, label.split()):
                 ImageDraw.Draw(text_layer).text(
-                    xy=(pos, self.template.label_params.y_pos),
+                    xy=(pos, self.label_props.y_pos),
                     text=val,
                     font=ImageFont.truetype(
-                        self.template.label_params.font_path,
-                        self.template.label_params.font_size
+                        self.label_props.font_path,
+                        self.label_props.font_size
                     ),
                     fill=(*Color.BLACK, Color.SOLID)
                 )
@@ -73,17 +79,17 @@ class PlateGenerator:
         :return: String label with the given character in the given position.
         """
         # invalid position
-        if x_position not in self.template.label_params.x_pos:
+        if x_position not in self.label_props.x_pos:
             raise ValueError('Invalid position')
         # invalid character
-        if character not in self.template.available_chars:
+        if character not in self.plate_props.available_chars:
             raise ValueError('Invalid character')
 
         label = []
-        for x in self.template.label_params.x_pos:
+        for x in self.label_props.x_pos:
             if x == x_position:
                 label.append(character)
-            elif x_position in self.template.label_params.x_pos:
-                label.append(random.choice(self.template.available_chars))
+            elif x_position in self.label_props.x_pos:
+                label.append(random.choice(self.plate_props.available_chars))
 
         return ''.join(label)
