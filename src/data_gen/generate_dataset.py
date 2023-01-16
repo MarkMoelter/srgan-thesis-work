@@ -1,4 +1,3 @@
-import os
 import pandas as pd
 from tqdm import tqdm
 
@@ -7,12 +6,6 @@ from .plate_params import RectangularPlate
 
 
 def generate_dataset(sets: int, image_directory: str, label_path: str) -> None:
-    IMG_DIR = 'data_gen/master_dataset'
-    CSV_PATH = 'data_gen/image_labels.csv'
-
-    # plate_dir = 'Results/master_dataset/testing_set'
-    # master_csv = f'Results/CSVs/Master_Dataset.csv'
-
     gen = PlateGenerator(RectangularPlate)
     plates = gen.generate_plate_sets(sets)
 
@@ -23,14 +16,8 @@ def generate_dataset(sets: int, image_directory: str, label_path: str) -> None:
 
     # dataframe creation and save
     dataframe = pd.DataFrame(plate_list, columns=['Filename', 'Labels'])
-    dataframe.to_csv(CSV_PATH, index=False)
+    dataframe.to_csv(label_path, index=False)
 
     # save the images
     for plate in tqdm(plates):
-        plate.save_plate(IMG_DIR)
-
-
-if __name__ == '__main__':
-    os.chdir(r'C:\Users\marke\PycharmProjects\Thesis SRGAN')
-
-    generate_dataset()
+        plate.save_plate(image_directory)
