@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 
 import helpers
-from gan.loss import GeneratorLoss
+from .loss import GeneratorLoss
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class UpsampleBlock(nn.Module):
     def __init__(self, in_channels: int, up_scale: int):
         super().__init__()
