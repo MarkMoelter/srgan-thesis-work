@@ -50,3 +50,20 @@ class TestPredictionAccuracy(unittest.TestCase):
         regular_result = acc.calc_prediction_accuracy(label, regular_prediction)
 
         self.assertEqual(whitespace_result, regular_result)
+
+
+class TestCalcColumnAccuracy(unittest.TestCase):
+    def setUp(self) -> None:
+        num_elements = 3
+        self.valid_labels = ['Hello'] * num_elements
+        self.valid_predictions = ['World'] * num_elements
+
+    def test_returns_float(self):
+        result = acc.calc_column_accuracy(self.valid_labels, self.valid_predictions)
+
+        self.assertIsInstance(result, float)
+
+    def test_returns_0_point_2(self):
+        result = acc.calc_column_accuracy(self.valid_labels, self.valid_predictions)
+
+        self.assertAlmostEqual(result, 0.2)
