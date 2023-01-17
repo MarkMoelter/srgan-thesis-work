@@ -3,12 +3,12 @@ import logging
 import pandas as pd
 
 import constants as c
-import utils.helpers as h
-from utils.header import Header
 import recognition as recog
+import utils.helpers as h
 from accuracy import accuracy
 from data_gen import generate_dataset
 from gan import MultiSizeRunner
+from utils.header import Header
 
 
 def main():
@@ -29,14 +29,18 @@ def main():
 
     if GENERATE_DATA:
         generate_dataset(c.SETS, c.MASTER_DATASET_DIR, c.LABEL_PATH)
+
     if TRAIN_MODEL:
         logging.info(multi.training(c.TRAIN_DATA_PATH, c.EPOCH_NUM).head())
+
     if VALIDATE_MODEL:
         logging.info(multi.validation(c.VAL_DATA_PATH, c.IMG_DIR).head())
+
     if RECOGNITION:
         df = pd.read_csv(c.PLATE_CSV)
         df = recog.recognition(df)
         df.to_csv(c.PLATE_CSV)
+
     if CHECK_ACCURACY:
         df = pd.read_csv(c.PLATE_CSV)
 
