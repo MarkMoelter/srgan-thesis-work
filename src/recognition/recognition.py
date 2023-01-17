@@ -3,7 +3,7 @@ import logging
 import pandas as pd
 
 import constants as c
-import helpers
+from utils import helpers
 from .plate_reader import PlateReader
 
 

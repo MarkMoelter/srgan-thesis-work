@@ -4,7 +4,7 @@ import statistics as stats
 import torch
 from tqdm import tqdm
 
-import helpers
+from utils import helpers
 from .loss import GeneratorLoss
 
 logger = logging.getLogger(__name__)
