@@ -125,6 +125,7 @@ class MultiSizeRunner:
 
             model.main_loop()
 
+            # TODO: Standardize this to header format?
             results_dict[f'{lr_size}-{hr_size}'] = model.collect_metrics
 
             logging.debug(results_dict.items())

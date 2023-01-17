@@ -11,7 +11,6 @@ from data_gen import generate_dataset
 from gan import MultiSizeRunner
 
 
-# TODO: REPLACE ALL USES OF DATAFRAME HEADERS WITH HEADER OBJECT AND METHODS!!!
 def main():
     logging.info('Starting main program')
 

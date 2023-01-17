@@ -2,7 +2,7 @@ import logging
 import statistics
 
 import torch
-import torchvision.utils as utils
+import torchvision.utils
 from tqdm import tqdm
 
 import utils.path
@@ -166,7 +166,7 @@ class Validation:
         for index, image in enumerate(tqdm(prepared_images)):
 
             if grid:
-                image = utils.make_grid(image, nrow=image_per_row)
+                image = torchvision.utils.make_grid(image, nrow=image_per_row)
 
             image_path = f'{filepath}/{str(index).zfill(4)}.png'
-            utils.save_image(image, image_path)
+            torchvision.utils.save_image(image, image_path)
