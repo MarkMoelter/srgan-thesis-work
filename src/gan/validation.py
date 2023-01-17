@@ -5,7 +5,7 @@ import torch
 import torchvision.utils as utils
 from tqdm import tqdm
 
-from utils import helpers
+import utils.path
 from .metrics import psnr, ssim
 from .model import Generator
 
@@ -160,7 +160,7 @@ class Validation:
         """
 
         filepath = f'{self.img_save_dir}/{subdirectory}'
-        helpers.create_path(filepath)
+        utils.path.create_path(filepath)
 
         prepared_images = self._prepare_images(images, chunk_size)
         for index, image in enumerate(tqdm(prepared_images)):

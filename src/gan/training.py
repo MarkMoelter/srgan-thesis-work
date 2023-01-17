@@ -4,7 +4,7 @@ import statistics as stats
 import torch
 from tqdm import tqdm
 
-from utils import helpers
+import utils.path
 from .loss import GeneratorLoss
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class Training:
             disc_loss_each_epoch.append(avg_disc_loss)
 
         # save params
-        helpers.create_path(self.param_dir)
+        utils.path.create_path(self.param_dir)
         torch.save(self.gen_net.state_dict(), f'{self.param_dir}/gen_params.pth')
         torch.save(self.disc_net.state_dict(), f'{self.param_dir}/disc_params.pth')
 
