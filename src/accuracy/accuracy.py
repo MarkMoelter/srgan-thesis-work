@@ -4,12 +4,10 @@ from itertools import zip_longest
 
 import pandas as pd
 
-logger = logging.getLogger(__name__)
 
-
-def calculate_prediction_accuracy(label: str, prediction: str) -> float:
+def calc_prediction_accuracy(label: str, prediction: str) -> float:
     """
-    Compute the accuracy between a label and a prediction.
+    Compute the accuracy between a label string and a prediction string.
 
     :param label: The correct label.
     :param prediction: The prediction to be checked for accuracy.
@@ -56,7 +54,7 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     # accuracy between strings as lists
     acc_list = []
     for label, predict in zip(labels, predictions):
-        acc_value = calculate_prediction_accuracy(label, predict)
+        acc_value = calc_prediction_accuracy(label, predict)
         acc_list.append(acc_value)
 
     return statistics.mean(acc_list)
@@ -89,6 +87,6 @@ def accuracy(
 
         # append results to dictionary
         accuracy_dict[header] = accuracy_value
-        logger.debug(f'{header} Accuracy: {accuracy_value}')
+        logging.debug(f'{header} Accuracy: {accuracy_value}')
 
     return accuracy_dict
