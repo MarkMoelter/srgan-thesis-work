@@ -1,6 +1,6 @@
 from PIL import Image
 
-import utils.path
+import src.utils.path as path
 
 
 class Plate:
@@ -18,5 +18,5 @@ class Plate:
 
         :param directory: Folder path to save the image to.
         """
-        utils.path.create_path(directory)
+        path.create_path(directory)
         self.image.save(f'{directory}/{self.filename}.png')
