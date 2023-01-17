@@ -16,11 +16,14 @@ def calc_prediction_accuracy(label: str, prediction: str) -> float:
 
     # check if not string
     if not isinstance(prediction, str):
-        raise ValueError(f'{prediction} is not a string')
+        raise TypeError(f'{prediction} is not a string')
+
+    if not isinstance(label, str):
+        raise TypeError(f'{label} is not a string')
 
     # check if identical
     if label == prediction:
-        return 1
+        return float(1)
 
     # element to element comparison
     num_matches = 0
@@ -33,7 +36,7 @@ def calc_prediction_accuracy(label: str, prediction: str) -> float:
     return num_matches / len(label)
 
 
-def column_accuracy(labels: list[str], predictions: list[str]) -> float:
+def calc_column_accuracy(labels: list[str], predictions: list[str]) -> float:
     """
     Calculate the accuracy between 2 lists of equal length.
 
@@ -60,7 +63,7 @@ def column_accuracy(labels: list[str], predictions: list[str]) -> float:
     return statistics.mean(acc_list)
 
 
-def accuracy(
+def calc_dataframe_accuracy(
         plate_dataframe: pd.DataFrame,
         headers: list[str],
         label_header: str = 'Real Plates'
@@ -83,7 +86,7 @@ def accuracy(
     for header in headers:
         # collect the plate predictions
         predictions: list[str] = plate_dataframe[header].tolist()
-        accuracy_value: float = column_accuracy(labels, predictions)
+        accuracy_value: float = calc_column_accuracy(labels, predictions)
 
         # append results to dictionary
         accuracy_dict[header] = accuracy_value

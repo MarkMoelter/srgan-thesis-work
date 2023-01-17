@@ -1,1 +1,1 @@
-from .accuracy import accuracy
+from .accuracy import calc_dataframe_accuracy

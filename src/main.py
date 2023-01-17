@@ -5,7 +5,7 @@ import pandas as pd
 import constants as c
 import recognition as recog
 import utils.helpers as h
-from accuracy import accuracy
+from accuracy import calc_dataframe_accuracy
 from data_gen import generate_dataset
 from gan import MultiSizeRunner
 from utils.header import Header
@@ -44,9 +44,9 @@ def main():
     if CHECK_ACCURACY:
         df = pd.read_csv(c.PLATE_CSV)
 
-        benchmark_accuracy = accuracy(df, Header().benchmark_headers(c.HR_TO_TEST))
-        lr_accuracy = accuracy(df, Header().lr_headers(c.LR_TO_TEST))
-        sr_accuracy = accuracy(df, Header().sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
+        benchmark_accuracy = calc_dataframe_accuracy(df, Header().benchmark_headers(c.HR_TO_TEST))
+        lr_accuracy = calc_dataframe_accuracy(df, Header().lr_headers(c.LR_TO_TEST))
+        sr_accuracy = calc_dataframe_accuracy(df, Header().sr_headers(c.LR_TO_TEST, c.HR_TO_TEST))
 
         logging.info(benchmark_accuracy)
         logging.info(lr_accuracy)
