@@ -14,7 +14,7 @@ def recognition(plate_df: pd.DataFrame) -> pd.DataFrame:
     recog = Recognition(plate_df)
     recog.benchmark_recognition()
     recog.low_resolution_recognition()
-    recog.high_resolution_recognition()
+    recog.super_resolution_recognition()
 
     logging.info('Plate predictions finished')
     return recog.df
