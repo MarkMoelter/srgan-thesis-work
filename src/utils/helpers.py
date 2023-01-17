@@ -4,16 +4,15 @@ import os
 import winsound
 
 
-def create_pth(path: str) -> str:
+def create_path(dir_path: str) -> None:
     """
-    Create a folder if it does not already exist at that path. Returns the path.
+    Create a folder at the path provided
+     if it does not already exist at that path.
     
-    :param path: Path to create.
-    :return: The same path.
+    :param dir_path: Path to create.
     """
-    if not os.path.exists(path):
-        os.makedirs(path)
-    return path
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
 
 def log_init(
@@ -87,7 +86,8 @@ def img_save(
     """
     from tqdm import tqdm
     import torchvision.utils as utils
-    create_pth(save_path)
+
+    create_path(save_path)
     for index, image in enumerate(tqdm(images, desc=desc, position=position, leave=leave)):
         zfill_idx = str(index).zfill(4)
 

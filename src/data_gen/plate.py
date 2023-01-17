@@ -18,5 +18,5 @@ class Plate:
 
         :param directory: Folder path to save the image to.
         """
-        h.create_pth(directory)
+        h.create_path(directory)
         self.image.save(f'{directory}/{self.filename}.png')

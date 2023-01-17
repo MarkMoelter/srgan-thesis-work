@@ -47,7 +47,7 @@ class Training:
             disc_loss_each_epoch.append(avg_disc_loss)
 
         # save params
-        helpers.create_pth(self.param_dir)
+        helpers.create_path(self.param_dir)
         torch.save(self.gen_net.state_dict(), f'{self.param_dir}/gen_params.pth')
         torch.save(self.disc_net.state_dict(), f'{self.param_dir}/disc_params.pth')
 
