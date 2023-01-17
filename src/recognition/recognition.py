@@ -4,6 +4,7 @@ import pandas as pd
 
 import constants as c
 from utils import helpers
+from utils.header import Header
 from .plate_reader import PlateReader
 
 
@@ -11,11 +12,12 @@ class Recognition:
     def __init__(self, plate_df: pd.DataFrame):
         self.df = plate_df
 
+    # todo: remove hardcoded constant values from this class.
     def benchmark_recognition(self) -> None:
         """OCR recognition for the benchmark images. Updates the dataframe field."""
         for hr in [64, 128, 256, 512]:
             path = f'{c.BENCHMARK_PATH}/{hr}'
-            self.df[f'{hr}_Benchmark'] = PlateReader(path).predictions()
+            self.df[Header().benchmark_format(hr)] = PlateReader(path).predictions()
 
         logging.info(f'Benchmark predictions finished')
 
@@ -24,7 +26,7 @@ class Recognition:
         for lr in c.LR_TO_TEST:
             path = f'{c.LOW_RES_PATH}/{lr}'
             lr_predictions = PlateReader(path).predictions()
-            self.df[f'LR:{lr}'] = lr_predictions
+            self.df[Header().benchmark_format(lr)] = lr_predictions
 
         logging.info(f'LR predictions finished')
 
@@ -33,6 +35,6 @@ class Recognition:
         for lr, sr in helpers.combos(c.LR_TO_TEST, c.HR_TO_TEST):
             path = f'{c.SUPER_RES_PATH}/{lr}-{sr}'
             sr_predictions = PlateReader(path).predictions()
-            self.df[f'SR:{lr}-{sr}'] = sr_predictions
+            self.df[Header().super_res_format(lr, sr)] = sr_predictions
 
         logging.info(f'SR predictions finished')
